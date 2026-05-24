@@ -171,7 +171,7 @@ export default function PostJob() {
     const validation = JobSchema.safeParse(payload)
     if (!validation.success) {
       const fieldErrors: Record<string, string> = {}
-      validation.error.issues.forEach(issue => {
+      validation.error.issues.forEach((issue: { path: (string | number)[]; message: string }) => {
         const path = issue.path.join('.')
         fieldErrors[path] = issue.message
       })

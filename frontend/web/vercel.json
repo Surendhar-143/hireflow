@@ -1,7 +1,7 @@
 {
-  "buildCommand": "cd ../.. && pnpm --filter @hireflow/web build",
-  "outputDirectory": "frontend/web/dist",
-  "installCommand": "pnpm install",
+  "buildCommand": "cd ../.. && pnpm install && pnpm --filter @hireflow/schemas build && pnpm --filter @hireflow/web build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install -g pnpm@11.2.2",
   "framework": null,
   "rewrites": [
     {
