@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "npx prisma generate && tsc",
+    "build": "npx prisma@5.22.0 generate --schema=prisma/schema.prisma && node ../../node_modules/typescript/bin/tsc",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
