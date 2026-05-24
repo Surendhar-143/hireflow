@@ -1,9 +1,4 @@
-/**
- * HTTP Base Client
- * ─────────────────────────────────────────────────────────────────────────────
- * All API calls go through this single fetch wrapper.
- * Handles: base URL, auth headers, error parsing, timeouts.
- */
+import { telemetry } from '@/lib/observability'
 
 const API_BASE = (import.meta as any).env?.VITE_API_URL ?? 'http://localhost:8000/api/v1'
 const DEFAULT_TIMEOUT_MS = 10_000
@@ -39,6 +34,7 @@ export async function httpGet<T>(path: string, params?: Record<string, string | 
 
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS)
+  const startTime = performance.now()
 
   try {
     const res = await fetch(url.toString(), {
@@ -50,6 +46,7 @@ export async function httpGet<T>(path: string, params?: Record<string, string | 
     })
 
     clearTimeout(timer)
+    telemetry.trackLatency(path, performance.now() - startTime)
 
     if (!res.ok) {
       const body = await res.json().catch(() => ({}))
@@ -69,6 +66,7 @@ export async function httpGet<T>(path: string, params?: Record<string, string | 
 export async function httpPost<T>(path: string, body: unknown): Promise<T> {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS)
+  const startTime = performance.now()
 
   try {
     const res = await fetch(`${API_BASE}${path}`, {
@@ -82,6 +80,7 @@ export async function httpPost<T>(path: string, body: unknown): Promise<T> {
     })
 
     clearTimeout(timer)
+    telemetry.trackLatency(path, performance.now() - startTime)
 
     if (!res.ok) {
       const errBody = await res.json().catch(() => ({}))

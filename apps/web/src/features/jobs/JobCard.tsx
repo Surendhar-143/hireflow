@@ -53,9 +53,9 @@ interface JobCardProps {
   index?: number
 }
 
-export function JobCard({ job, layout = 'list', index = 0 }: JobCardProps) {
-  const { toggleSaveJob, isJobSaved } = useSearchStore()
-  const saved = isJobSaved(job.id)
+export const JobCard = React.memo(function JobCard({ job, layout = 'list', index = 0 }: JobCardProps) {
+  const toggleSaveJob = useSearchStore((state) => state.toggleSaveJob)
+  const saved = useSearchStore((state) => state.savedJobs.includes(job.id))
 
   return (
     <motion.article
@@ -181,4 +181,4 @@ export function JobCard({ job, layout = 'list', index = 0 }: JobCardProps) {
       </div>
     </motion.article>
   )
-}
+})

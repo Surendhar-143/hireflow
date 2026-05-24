@@ -1,6 +1,8 @@
 import React from 'react'
 import { Button } from '@/components/ui/button'
 
+import { telemetry } from '@/lib/observability'
+
 interface ErrorBoundaryState {
   hasError: boolean
   error?: Error
@@ -22,7 +24,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error('[ErrorBoundary]', error, info)
+    telemetry.captureCrash(error, info.componentStack || undefined)
   }
 
   render() {
