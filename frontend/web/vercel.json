@@ -1,0 +1,12 @@
+{
+  "buildCommand": "cd ../.. && pnpm --filter @hireflow/web build",
+  "outputDirectory": "frontend/web/dist",
+  "installCommand": "pnpm install",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
