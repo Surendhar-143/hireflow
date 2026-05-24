@@ -2,14 +2,14 @@
   "name": "@hireflow/express-api",
   "version": "0.0.1",
   "private": true,
-  "main": "dist/server.js",
+  "main": "dist/backend/express-api/src/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "npx prisma@5.22.0 generate --schema=prisma/schema.prisma && tsc",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "start": "node dist/server.js"
+    "start": "node dist/backend/express-api/src/server.js"
   },
   "dependencies": {
     "@hireflow/config": "workspace:*",
