@@ -21,7 +21,7 @@ const envSchema = z.object({
     z.string().url().default('http://localhost:8001')
   ),
   CORS_ALLOWED_ORIGINS: emptyToUndefined(
-    z.string().default('http://localhost:5173')
+    z.string().default('http://localhost:3000,http://localhost:5173,https://hireflow-web-kappa.vercel.app')
   ),
   SENTRY_DSN: emptyToUndefined(
     z.string().url().optional()
