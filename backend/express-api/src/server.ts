@@ -35,7 +35,14 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (e.g. server-to-server, curl, Postman in dev)
       if (!origin) return callback(null, true)
-      if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+      
+      const isAllowed = 
+        allowedOrigins.includes('*') || 
+        allowedOrigins.includes(origin) || 
+        origin.endsWith('.vercel.app') || 
+        origin.startsWith('http://localhost:')
+
+      if (isAllowed) {
         return callback(null, true)
       }
       logger.warn({ origin }, 'CORS blocked: origin not in allowlist')
