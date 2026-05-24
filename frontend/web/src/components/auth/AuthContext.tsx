@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { authApi } from '@/api/auth.api'
 import { useQueryClient } from '@tanstack/react-query'
@@ -24,20 +24,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserDTO | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const queryClient = useQueryClient()
+  
+  const lastTokenRef = useRef<string | null>(null)
+  const activeHydrationRef = useRef<Promise<void> | null>(null)
 
-  // Hydrate user profile from backend database
+  // Hydrate user profile from backend database (with request deduplication)
   const hydrateProfile = async (token: string) => {
-    try {
-      localStorage.setItem('hf_token', token)
-      const profile = await authApi.getMe()
-      setUser(profile)
-      if (profile.role) {
-        localStorage.setItem('hf_role', profile.role)
-      }
-    } catch (err: any) {
-      console.error('Failed to hydrate local profile database:', err)
-      setUser(null)
+    // If we already have a user and the token hasn't changed, skip duplicate request
+    if (lastTokenRef.current === token && user) {
+      return
     }
+    // If there is an active hydration for this exact token in progress, return that promise to deduplicate
+    if (lastTokenRef.current === token && activeHydrationRef.current) {
+      return activeHydrationRef.current
+    }
+
+    lastTokenRef.current = token
+
+    const hydrationPromise = (async () => {
+      try {
+        localStorage.setItem('hf_token', token)
+        const profile = await authApi.getMe()
+        setUser(profile)
+        if (profile.role) {
+          localStorage.setItem('hf_role', profile.role)
+        }
+      } catch (err: any) {
+        console.error('Failed to hydrate local profile database:', err)
+        setUser(null)
+        lastTokenRef.current = null
+      } finally {
+        activeHydrationRef.current = null
+      }
+    })()
+
+    activeHydrationRef.current = hydrationPromise
+    return hydrationPromise
   }
 
   useEffect(() => {
