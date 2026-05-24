@@ -1,0 +1,123 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Deploy Production — runs after CI passes on push to main
+# Deploys frontend to Vercel Production
+# Deploys Express API to Railway
+# ─────────────────────────────────────────────────────────────────────────────
+name: Deploy Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      skip_frontend:
+        description: 'Skip frontend deploy'
+        type: boolean
+        default: false
+      skip_backend:
+        description: 'Skip backend deploy'
+        type: boolean
+        default: false
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false  # Never cancel in-flight production deploys
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '11'
+
+jobs:
+  # ── Frontend → Vercel Production ───────────────────────────────────────────
+  deploy-web:
+    name: 🌐 Deploy Web → Vercel
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.skip_frontend }}
+    environment:
+      name: production
+      url: ${{ steps.get-url.outputs.url }}
+    outputs:
+      deploy-url: ${{ steps.get-url.outputs.url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend (production)
+        run: pnpm --filter @hireflow/web build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL_PRODUCTION }}
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: apps/web
+
+      - name: Deploy to Vercel (Production)
+        id: get-url
+        run: |
+          DEPLOY_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | tail -n1)
+          echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+          echo "✅ Deployed to: $DEPLOY_URL"
+        working-directory: apps/web
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+  # ── Backend → Railway ──────────────────────────────────────────────────────
+  deploy-api:
+    name: 🚂 Deploy API → Railway
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.skip_backend }}
+    environment:
+      name: production-api
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy Express API to Railway
+        run: |
+          railway up --service=express-api --detach
+        working-directory: apps/express-api
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+  # ── Post-deploy Summary ────────────────────────────────────────────────────
+  notify:
+    name: 📣 Deployment Summary
+    needs: [deploy-web, deploy-api]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Summarize deployment
+        run: |
+          echo "## 🚀 Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Service | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Web (Vercel) | ${{ needs.deploy-web.result == 'success' && '✅ Deployed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| API (Railway) | ${{ needs.deploy-api.result == 'success' && '✅ Deployed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY

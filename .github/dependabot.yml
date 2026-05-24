@@ -1,0 +1,71 @@
+version: 2
+updates:
+  # ── npm (JavaScript / TypeScript) ─────────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "automated"
+    groups:
+      # Group all Radix UI updates into one PR
+      radix-ui:
+        patterns:
+          - "@radix-ui/*"
+      # Group all TanStack updates
+      tanstack:
+        patterns:
+          - "@tanstack/*"
+      # Group TypeScript toolchain updates
+      typescript-toolchain:
+        patterns:
+          - "typescript"
+          - "@typescript-eslint/*"
+          - "tsx"
+          - "vite"
+          - "@vitejs/*"
+      # Group Prisma updates (ORM + CLI must stay in sync)
+      prisma:
+        patterns:
+          - "prisma"
+          - "@prisma/*"
+    ignore:
+      # Pin major versions — review manually
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-router-dom"
+        update-types: ["version-update:semver-major"]
+
+  # ── GitHub Actions ─────────────────────────────────────────────────────────
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Kolkata"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "automated"
+
+  # ── pip (Python / FastAPI) ─────────────────────────────────────────────────
+  - package-ecosystem: "pip"
+    directory: "/apps/fastapi-ai"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Kolkata"
+    labels:
+      - "dependencies"
+      - "python"
+      - "automated"
+    open-pull-requests-limit: 5

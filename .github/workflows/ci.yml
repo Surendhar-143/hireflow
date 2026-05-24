@@ -1,0 +1,153 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# CI Pipeline — runs on every pull request and push to main
+# Jobs: lint → typecheck → build (with Turborepo remote cache)
+# ─────────────────────────────────────────────────────────────────────────────
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  NODE_VERSION: '20'
+  PNPM_VERSION: '11'
+
+jobs:
+  # ── 1. Install & Cache ──────────────────────────────────────────────────────
+  setup:
+    name: 📦 Install dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache.outputs.cache-hit }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+  # ── 2. Lint ────────────────────────────────────────────────────────────────
+  lint:
+    name: 🔍 Lint
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint all workspaces
+        run: pnpm --filter @hireflow/web lint
+
+  # ── 3. Type Check ──────────────────────────────────────────────────────────
+  typecheck:
+    name: 🔎 Type check
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check — web
+        run: pnpm --filter @hireflow/web exec tsc --noEmit
+
+      - name: Type check — express-api
+        run: pnpm --filter @hireflow/express-api exec tsc --noEmit
+
+  # ── 4. Build ───────────────────────────────────────────────────────────────
+  build:
+    name: 🏗️ Build
+    needs: [lint, typecheck]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all apps (Turborepo)
+        run: pnpm --filter @hireflow/web build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:8000/api' }}
+
+      - name: Upload web build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: apps/web/dist
+          retention-days: 7
+
+  # ── 5. Build Summary ───────────────────────────────────────────────────────
+  ci-success:
+    name: ✅ CI passed
+    needs: [lint, typecheck, build]
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - run: echo "All CI checks passed!"

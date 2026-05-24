@@ -1,0 +1,111 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Deploy Preview — triggered on every PR open/sync
+# Builds and deploys frontend to Vercel Preview URL
+# Posts the URL as a PR comment for QA review
+# ─────────────────────────────────────────────────────────────────────────────
+name: Deploy Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+
+concurrency:
+  group: deploy-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '11'
+
+jobs:
+  deploy-preview:
+    name: 🚀 Preview Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend
+        run: pnpm --filter @hireflow/web build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL_STAGING }}
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: apps/web
+
+      - name: Deploy to Vercel (Preview)
+        id: vercel-deploy
+        run: |
+          DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | tail -n1)
+          echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+        working-directory: apps/web
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Comment preview URL on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const previewUrl = '${{ steps.vercel-deploy.outputs.url }}';
+            const prNumber = context.payload.pull_request.number;
+            const sha = context.payload.pull_request.head.sha.substring(0, 7);
+
+            const comment = `## 🚀 Preview Deployment Ready
+
+            | | |
+            |---|---|
+            | **Preview URL** | ${previewUrl} |
+            | **Commit** | \`${sha}\` |
+            | **Branch** | \`${{ github.head_ref }}\` |
+            | **Status** | ✅ Deployed |
+
+            > This preview will be updated automatically on every push to this PR.`;
+
+            // Delete previous preview comments
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+
+            for (const c of comments) {
+              if (c.user.login === 'github-actions[bot]' && c.body.includes('Preview Deployment Ready')) {
+                await github.rest.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: c.id,
+                });
+              }
+            }
+
+            // Post new comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: comment,
+            });
