@@ -24,7 +24,9 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (e.g. server-to-server, curl, Postman in dev)
       if (!origin) return callback(null, true)
-      if (allowedOrigins.includes(origin)) return callback(null, true)
+      if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+        return callback(null, true)
+      }
       logger.warn({ origin }, 'CORS blocked: origin not in allowlist')
       callback(new Error(`CORS policy: origin "${origin}" is not allowed`))
     },
