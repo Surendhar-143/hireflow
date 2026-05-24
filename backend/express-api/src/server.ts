@@ -16,8 +16,19 @@ import { prisma } from './lib/prisma'
 
 const app = express()
 
-// ─── CORS with strict origin allowlist ────────────────────────────────────────
 const allowedOrigins = config.CORS_ALLOWED_ORIGINS.split(',').map((o) => o.trim())
+
+// Always allow standard development and your specific Vercel production deployment URLs
+const requiredOrigins = [
+  'https://hireflow-web-kappa.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
+]
+requiredOrigins.forEach((origin) => {
+  if (!allowedOrigins.includes(origin)) {
+    allowedOrigins.push(origin)
+  }
+})
 
 app.use(
   cors({
