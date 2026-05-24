@@ -154,19 +154,75 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     // If User is not in our database yet (signed up via Supabase, first API request)
     if (!dbUser) {
       logger.info({ email: supabaseUser.email }, 'Syncing new authenticated Supabase user to PostgreSQL')
-      dbUser = await prisma.user.create({
-        data: {
-          id: supabaseUser.id, // Synchronize Supabase Auth UUID to local DB
-          email: supabaseUser.email!,
-          name: supabaseUser.user_metadata?.full_name || supabaseUser.email!.split('@')[0],
-          role: 'candidate', // Default fallback role
-          onboardingCompleted: false,
-        },
-        include: {
-          candidateProfile: true,
-          recruiterProfile: true,
-        },
-      })
+      
+      const role = supabaseUser.user_metadata?.default_role || 'candidate'
+      const name = supabaseUser.user_metadata?.full_name || supabaseUser.email!.split('@')[0]
+
+      if (role === 'recruiter') {
+        dbUser = await prisma.$transaction(async (tx) => {
+          const u = await tx.user.create({
+            data: {
+              id: supabaseUser.id,
+              email: supabaseUser.email!,
+              name,
+              role: 'recruiter',
+              onboardingCompleted: true,
+            },
+          })
+
+          // Find or create a default company for the recruiter
+          let company = await tx.company.findFirst({
+            where: { slug: 'my-tech-company' },
+          })
+
+          if (!company) {
+            company = await tx.company.create({
+              data: {
+                name: 'My Tech Company',
+                slug: 'my-tech-company',
+                industry: 'Technology',
+                size: 'small',
+                location: 'Remote',
+              },
+            })
+          }
+
+          await tx.recruiterProfile.create({
+            data: {
+              userId: u.id,
+              companyId: company.id,
+              title: 'Recruiter',
+              bio: '',
+            },
+          })
+
+          return tx.user.findUnique({
+            where: { id: u.id },
+            include: {
+              candidateProfile: true,
+              recruiterProfile: true,
+            },
+          }) as any
+        })
+      } else {
+        dbUser = await prisma.user.create({
+          data: {
+            id: supabaseUser.id, // Synchronize Supabase Auth UUID to local DB
+            email: supabaseUser.email!,
+            name,
+            role: 'candidate', // Default fallback role
+            onboardingCompleted: false,
+          },
+          include: {
+            candidateProfile: true,
+            recruiterProfile: true,
+          },
+        })
+      }
+    }
+
+    if (!dbUser) {
+      throw new AppError('Authentication failed: user profile not found', 401)
     }
 
     req.user = dbUser

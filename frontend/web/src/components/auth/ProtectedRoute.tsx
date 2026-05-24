@@ -26,5 +26,18 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return <Navigate to="/app/onboard" replace />
   }
 
+  // Redirect to correct workspace if on wrong path
+  if (user) {
+    const isRecruiterPath = location.pathname.startsWith('/app/recruiter')
+    const isOnboardPath = location.pathname === '/app/onboard'
+
+    if (user.role === 'recruiter' && !isRecruiterPath && !isOnboardPath) {
+      return <Navigate to="/app/recruiter" replace />
+    }
+    if ((user.role === 'candidate' || user.role === 'admin') && isRecruiterPath) {
+      return <Navigate to="/app/dashboard" replace />
+    }
+  }
+
   return <>{children}</>
 }

@@ -23,7 +23,7 @@ export class AuthController {
       }
 
       if (req.user.onboardingCompleted) {
-        throw new AppError('Onboarding already completed', 400)
+        return sendSuccess(res, req.user, 'Onboarding already completed')
       }
 
       const { role, name, ...profileData } = req.body
