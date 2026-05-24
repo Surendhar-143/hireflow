@@ -50,7 +50,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           localStorage.setItem('hf_role', profile.role)
         }
       } catch (err: any) {
-        console.error('Failed to hydrate local profile database:', err)
+        if (err instanceof TypeError && err.message === 'Failed to fetch') {
+          console.warn('Network error: Could not reach the authentication server. Please check CORS settings and server status.')
+        } else {
+          console.error('Failed to hydrate local profile database:', err)
+        }
         setUser(null)
         lastTokenRef.current = null
       } finally {
