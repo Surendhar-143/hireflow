@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HireFlow QA Audit Report</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #111827;
+      --border: #1f2937;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #6366f1;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 2rem;
+    }
+    .container {
+      max-w: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    h1, h2, h3 {
+      margin: 0 0 0.5rem;
+      font-weight: 800;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .metric-val {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--primary);
+    }
+    .metric-val.green { color: var(--success); }
+    .metric-val.red { color: var(--danger); }
+    .issue-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .issue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
+    .badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+    .badge.critical { background: var(--danger); color: white; }
+    .badge.high { background: #f97316; color: white; }
+    .badge.medium { background: var(--warning); color: black; }
+    .badge.low { background: var(--primary); color: white; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .table-container {
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    th, td {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--text-muted); font-size: 0.85rem; }
+    pre {
+      background: #030712;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>QA Audit Report</h1>
+      <p style="color: var(--text-muted); margin: 0;">Automated Crawler Execution Run Details</p>
+      <p style="color: var(--text-muted); margin: 0.25rem 0 0;">Timestamp: 2026-05-24T13:44:16.547Z</p>
+    </header>
+
+    <div class="meta-grid">
+      <div class="metric-card">
+        <h3>Quality Score</h3>
+        <div class="metric-val red">10/100</div>
+      </div>
+      <div class="metric-card">
+        <h3>Pages Traversed</h3>
+        <div class="metric-val">15</div>
+      </div>
+      <div class="metric-card">
+        <h3>Defects Detected</h3>
+        <div class="metric-val red">11</div>
+      </div>
+    </div>
+
+    <h2>Pages Crawled</h2>
+    <div class="issue-card table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>URL</th>
+            <th>Load Time</th>
+            <th>Heading Hierarchy</th>
+            <th>Checked Images</th>
+            <th>Missing Alt Tags</th>
+            <th>Checked Inputs</th>
+            <th>Missing Labels</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><code>/</code></td>
+              <td>698ms</td>
+              <td style="color: var(--success)">OK</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+            </tr>
+          
+            <tr>
+              <td><code>/jobs</code></td>
+              <td>65ms</td>
+              <td style="color: var(--success)">OK</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>1</td>
+              <td style="color: var(--warning)">1</td>
+            </tr>
+          
+            <tr>
+              <td><code>/companies</code></td>
+              <td>58ms</td>
+              <td style="color: var(--success)">OK</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+            </tr>
+          
+            <tr>
+              <td><code>/companies/stripe</code></td>
+              <td>62ms</td>
+              <td style="color: var(--success)">OK</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+            </tr>
+          
+            <tr>
+              <td><code>/login</code></td>
+              <td>62ms</td>
+              <td style="color: var(--danger)">VIOLATION</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>2</td>
+              <td style="color: var(--text)">0</td>
+            </tr>
+          
+            <tr>
+              <td><code>/signup</code></td>
+              <td>73ms</td>
+              <td style="color: var(--danger)">VIOLATION</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>3</td>
+              <td style="color: var(--text)">0</td>
+            </tr>
+          
+            <tr>
+              <td><code>/app/dashboard</code></td>
+              <td>262ms</td>
+              <td style="color: var(--danger)">VIOLATION</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>2</td>
+              <td style="color: var(--text)">0</td>
+            </tr>
+          
+            <tr>
+              <td><code>/app/saved</code></td>
+              <td>268ms</td>
+              <td style="color: var(--danger)">VIOLATION</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>2</td>
+              <td style="color: var(--text)">0</td>
+            </tr>
+          
+            <tr>
+              <td><code>/app/applications</code></td>
+              <td>260ms</td>
+              <td style="color: var(--danger)">VIOLATION</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>2</td>
+              <td style="color: var(--text)">0</td>
+            </tr>
+          
+            <tr>
+              <td><code>/app/ai-matches</code></td>
+              <td>267ms</td>
+              <td style="color: var(--danger)">VIOLATION</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>2</td>
+              <td style="color: var(--text)">0</td>
+            </tr>
+          
+            <tr>
+              <td><code>/app/settings</code></td>
+              <td>272ms</td>
+              <td style="color: var(--danger)">VIOLATION</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>2</td>
+              <td style="color: var(--text)">0</td>
+            </tr>
+          
+            <tr>
+              <td><code>/app/recruiter</code></td>
+              <td>260ms</td>
+              <td style="color: var(--danger)">VIOLATION</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>2</td>
+              <td style="color: var(--text)">0</td>
+            </tr>
+          
+            <tr>
+              <td><code>/app/recruiter/post</code></td>
+              <td>271ms</td>
+              <td style="color: var(--danger)">VIOLATION</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>2</td>
+              <td style="color: var(--text)">0</td>
+            </tr>
+          
+            <tr>
+              <td><code>/app/recruiter/applicants</code></td>
+              <td>225ms</td>
+              <td style="color: var(--danger)">VIOLATION</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>2</td>
+              <td style="color: var(--text)">0</td>
+            </tr>
+          
+            <tr>
+              <td><code>/app/recruiter/settings</code></td>
+              <td>251ms</td>
+              <td style="color: var(--danger)">VIOLATION</td>
+              <td>0</td>
+              <td style="color: var(--text)">0</td>
+              <td>2</td>
+              <td style="color: var(--text)">0</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Issues Found</h2>
+    
+      <div class="issue-card">
+        <div class="issue-header">
+          <h3>Incorrect Heading Hierarchy</h3>
+          <span class="badge medium">Medium</span>
+        </div>
+        <p><strong>Page:</strong> <code>/login</code></p>
+        <p><strong>Description:</strong> Page does not contain an h1 heading but contains h2 or subheadings: [h2]</p>
+        <div class="grid">
+          <div>
+            <p><strong>Reproduction Steps:</strong></p>
+            <ol>
+              <li>Navigate to page: /login</li><li>Inspect HTML heading element tags</li>
+            </ol>
+          </div>
+          <div>
+            <p><strong>Expected:</strong> Page should start with a single h1 heading tag for search engine optimization and screen reader readability.</p>
+            <p><strong>Actual:</strong> Page starts with heading level tags: [h2] without h1 root.</p>
+            <p><strong>Suggested Fix:</strong> Wrap page title in an <h1> element or adjust subheading tags accordingly.</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="issue-card">
+        <div class="issue-header">
+          <h3>Incorrect Heading Hierarchy</h3>
+          <span class="badge medium">Medium</span>
+        </div>
+        <p><strong>Page:</strong> <code>/signup</code></p>
+        <p><strong>Description:</strong> Page does not contain an h1 heading but contains h2 or subheadings: [h2]</p>
+        <div class="grid">
+          <div>
+            <p><strong>Reproduction Steps:</strong></p>
+            <ol>
+              <li>Navigate to page: /signup</li><li>Inspect HTML heading element tags</li>
+            </ol>
+          </div>
+          <div>
+            <p><strong>Expected:</strong> Page should start with a single h1 heading tag for search engine optimization and screen reader readability.</p>
+            <p><strong>Actual:</strong> Page starts with heading level tags: [h2] without h1 root.</p>
+            <p><strong>Suggested Fix:</strong> Wrap page title in an <h1> element or adjust subheading tags accordingly.</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="issue-card">
+        <div class="issue-header">
+          <h3>Incorrect Heading Hierarchy</h3>
+          <span class="badge medium">Medium</span>
+        </div>
+        <p><strong>Page:</strong> <code>/app/dashboard</code></p>
+        <p><strong>Description:</strong> Page does not contain an h1 heading but contains h2 or subheadings: [h2]</p>
+        <div class="grid">
+          <div>
+            <p><strong>Reproduction Steps:</strong></p>
+            <ol>
+              <li>Navigate to page: /app/dashboard</li><li>Inspect HTML heading element tags</li>
+            </ol>
+          </div>
+          <div>
+            <p><strong>Expected:</strong> Page should start with a single h1 heading tag for search engine optimization and screen reader readability.</p>
+            <p><strong>Actual:</strong> Page starts with heading level tags: [h2] without h1 root.</p>
+            <p><strong>Suggested Fix:</strong> Wrap page title in an <h1> element or adjust subheading tags accordingly.</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="issue-card">
+        <div class="issue-header">
+          <h3>Incorrect Heading Hierarchy</h3>
+          <span class="badge medium">Medium</span>
+        </div>
+        <p><strong>Page:</strong> <code>/app/saved</code></p>
+        <p><strong>Description:</strong> Page does not contain an h1 heading but contains h2 or subheadings: [h2]</p>
+        <div class="grid">
+          <div>
+            <p><strong>Reproduction Steps:</strong></p>
+            <ol>
+              <li>Navigate to page: /app/saved</li><li>Inspect HTML heading element tags</li>
+            </ol>
+          </div>
+          <div>
+            <p><strong>Expected:</strong> Page should start with a single h1 heading tag for search engine optimization and screen reader readability.</p>
+            <p><strong>Actual:</strong> Page starts with heading level tags: [h2] without h1 root.</p>
+            <p><strong>Suggested Fix:</strong> Wrap page title in an <h1> element or adjust subheading tags accordingly.</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="issue-card">
+        <div class="issue-header">
+          <h3>Incorrect Heading Hierarchy</h3>
+          <span class="badge medium">Medium</span>
+        </div>
+        <p><strong>Page:</strong> <code>/app/applications</code></p>
+        <p><strong>Description:</strong> Page does not contain an h1 heading but contains h2 or subheadings: [h2]</p>
+        <div class="grid">
+          <div>
+            <p><strong>Reproduction Steps:</strong></p>
+            <ol>
+              <li>Navigate to page: /app/applications</li><li>Inspect HTML heading element tags</li>
+            </ol>
+          </div>
+          <div>
+            <p><strong>Expected:</strong> Page should start with a single h1 heading tag for search engine optimization and screen reader readability.</p>
+            <p><strong>Actual:</strong> Page starts with heading level tags: [h2] without h1 root.</p>
+            <p><strong>Suggested Fix:</strong> Wrap page title in an <h1> element or adjust subheading tags accordingly.</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="issue-card">
+        <div class="issue-header">
+          <h3>Incorrect Heading Hierarchy</h3>
+          <span class="badge medium">Medium</span>
+        </div>
+        <p><strong>Page:</strong> <code>/app/ai-matches</code></p>
+        <p><strong>Description:</strong> Page does not contain an h1 heading but contains h2 or subheadings: [h2]</p>
+        <div class="grid">
+          <div>
+            <p><strong>Reproduction Steps:</strong></p>
+            <ol>
+              <li>Navigate to page: /app/ai-matches</li><li>Inspect HTML heading element tags</li>
+            </ol>
+          </div>
+          <div>
+            <p><strong>Expected:</strong> Page should start with a single h1 heading tag for search engine optimization and screen reader readability.</p>
+            <p><strong>Actual:</strong> Page starts with heading level tags: [h2] without h1 root.</p>
+            <p><strong>Suggested Fix:</strong> Wrap page title in an <h1> element or adjust subheading tags accordingly.</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="issue-card">
+        <div class="issue-header">
+          <h3>Incorrect Heading Hierarchy</h3>
+          <span class="badge medium">Medium</span>
+        </div>
+        <p><strong>Page:</strong> <code>/app/settings</code></p>
+        <p><strong>Description:</strong> Page does not contain an h1 heading but contains h2 or subheadings: [h2]</p>
+        <div class="grid">
+          <div>
+            <p><strong>Reproduction Steps:</strong></p>
+            <ol>
+              <li>Navigate to page: /app/settings</li><li>Inspect HTML heading element tags</li>
+            </ol>
+          </div>
+          <div>
+            <p><strong>Expected:</strong> Page should start with a single h1 heading tag for search engine optimization and screen reader readability.</p>
+            <p><strong>Actual:</strong> Page starts with heading level tags: [h2] without h1 root.</p>
+            <p><strong>Suggested Fix:</strong> Wrap page title in an <h1> element or adjust subheading tags accordingly.</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="issue-card">
+        <div class="issue-header">
+          <h3>Incorrect Heading Hierarchy</h3>
+          <span class="badge medium">Medium</span>
+        </div>
+        <p><strong>Page:</strong> <code>/app/recruiter</code></p>
+        <p><strong>Description:</strong> Page does not contain an h1 heading but contains h2 or subheadings: [h2]</p>
+        <div class="grid">
+          <div>
+            <p><strong>Reproduction Steps:</strong></p>
+            <ol>
+              <li>Navigate to page: /app/recruiter</li><li>Inspect HTML heading element tags</li>
+            </ol>
+          </div>
+          <div>
+            <p><strong>Expected:</strong> Page should start with a single h1 heading tag for search engine optimization and screen reader readability.</p>
+            <p><strong>Actual:</strong> Page starts with heading level tags: [h2] without h1 root.</p>
+            <p><strong>Suggested Fix:</strong> Wrap page title in an <h1> element or adjust subheading tags accordingly.</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="issue-card">
+        <div class="issue-header">
+          <h3>Incorrect Heading Hierarchy</h3>
+          <span class="badge medium">Medium</span>
+        </div>
+        <p><strong>Page:</strong> <code>/app/recruiter/post</code></p>
+        <p><strong>Description:</strong> Page does not contain an h1 heading but contains h2 or subheadings: [h2]</p>
+        <div class="grid">
+          <div>
+            <p><strong>Reproduction Steps:</strong></p>
+            <ol>
+              <li>Navigate to page: /app/recruiter/post</li><li>Inspect HTML heading element tags</li>
+            </ol>
+          </div>
+          <div>
+            <p><strong>Expected:</strong> Page should start with a single h1 heading tag for search engine optimization and screen reader readability.</p>
+            <p><strong>Actual:</strong> Page starts with heading level tags: [h2] without h1 root.</p>
+            <p><strong>Suggested Fix:</strong> Wrap page title in an <h1> element or adjust subheading tags accordingly.</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="issue-card">
+        <div class="issue-header">
+          <h3>Incorrect Heading Hierarchy</h3>
+          <span class="badge medium">Medium</span>
+        </div>
+        <p><strong>Page:</strong> <code>/app/recruiter/applicants</code></p>
+        <p><strong>Description:</strong> Page does not contain an h1 heading but contains h2 or subheadings: [h2]</p>
+        <div class="grid">
+          <div>
+            <p><strong>Reproduction Steps:</strong></p>
+            <ol>
+              <li>Navigate to page: /app/recruiter/applicants</li><li>Inspect HTML heading element tags</li>
+            </ol>
+          </div>
+          <div>
+            <p><strong>Expected:</strong> Page should start with a single h1 heading tag for search engine optimization and screen reader readability.</p>
+            <p><strong>Actual:</strong> Page starts with heading level tags: [h2] without h1 root.</p>
+            <p><strong>Suggested Fix:</strong> Wrap page title in an <h1> element or adjust subheading tags accordingly.</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="issue-card">
+        <div class="issue-header">
+          <h3>Incorrect Heading Hierarchy</h3>
+          <span class="badge medium">Medium</span>
+        </div>
+        <p><strong>Page:</strong> <code>/app/recruiter/settings</code></p>
+        <p><strong>Description:</strong> Page does not contain an h1 heading but contains h2 or subheadings: [h2]</p>
+        <div class="grid">
+          <div>
+            <p><strong>Reproduction Steps:</strong></p>
+            <ol>
+              <li>Navigate to page: /app/recruiter/settings</li><li>Inspect HTML heading element tags</li>
+            </ol>
+          </div>
+          <div>
+            <p><strong>Expected:</strong> Page should start with a single h1 heading tag for search engine optimization and screen reader readability.</p>
+            <p><strong>Actual:</strong> Page starts with heading level tags: [h2] without h1 root.</p>
+            <p><strong>Suggested Fix:</strong> Wrap page title in an <h1> element or adjust subheading tags accordingly.</p>
+          </div>
+        </div>
+      </div>
+    
+
+    <h2>System Errors & Warnings</h2>
+    <div class="grid">
+      <div>
+        <h3>Console Warnings & Errors (1)</h3>
+        <pre>[Console WARNING] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.</pre>
+      </div>
+      <div>
+        <h3>Network & API Failures (0)</h3>
+        <pre>No network request failures.</pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

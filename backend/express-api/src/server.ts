@@ -16,6 +16,9 @@ import { prisma } from './lib/prisma'
 
 const app = express()
 
+// Trust the first proxy (Render load balancer / Cloudflare) to ensure accurate client IP resolving
+app.set('trust proxy', 1)
+
 const allowedOrigins = config.CORS_ALLOWED_ORIGINS.split(',').map((o) => o.trim())
 
 // Always allow standard development and your specific Vercel production deployment URLs
@@ -55,7 +58,12 @@ app.use(
 )
 
 // Security and standard parsers
-app.use(helmet())
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    contentSecurityPolicy: false, // Disables CSP headers (which are redundant for a JSON API)
+  })
+)
 app.use(express.json({ limit: '2mb' }))
 
 // Correlation/Trace & Timer Loggers

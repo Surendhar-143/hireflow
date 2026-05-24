@@ -1,0 +1,367 @@
+{
+  "timestamp": "2026-05-24T13:44:16.547Z",
+  "score": 10,
+  "pagesCrawledCount": 15,
+  "metrics": [
+    {
+      "url": "/",
+      "loadTimeMs": 698,
+      "headingHierarchyOk": true,
+      "headingsFound": [
+        "h1",
+        "h2",
+        "h3",
+        "h3",
+        "h3",
+        "h3",
+        "h2"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 0,
+      "missingLabelsCount": 0
+    },
+    {
+      "url": "/jobs",
+      "loadTimeMs": 65,
+      "headingHierarchyOk": true,
+      "headingsFound": [
+        "h1"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 1,
+      "missingLabelsCount": 1
+    },
+    {
+      "url": "/companies",
+      "loadTimeMs": 58,
+      "headingHierarchyOk": true,
+      "headingsFound": [
+        "h1"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 0,
+      "missingLabelsCount": 0
+    },
+    {
+      "url": "/companies/stripe",
+      "loadTimeMs": 62,
+      "headingHierarchyOk": true,
+      "headingsFound": [
+        "h1",
+        "h2",
+        "h2",
+        "h3"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 0,
+      "missingLabelsCount": 0
+    },
+    {
+      "url": "/login",
+      "loadTimeMs": 62,
+      "headingHierarchyOk": false,
+      "headingsFound": [
+        "h2"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 2,
+      "missingLabelsCount": 0
+    },
+    {
+      "url": "/signup",
+      "loadTimeMs": 73,
+      "headingHierarchyOk": false,
+      "headingsFound": [
+        "h2"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 3,
+      "missingLabelsCount": 0
+    },
+    {
+      "url": "/app/dashboard",
+      "loadTimeMs": 262,
+      "headingHierarchyOk": false,
+      "headingsFound": [
+        "h2"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 2,
+      "missingLabelsCount": 0
+    },
+    {
+      "url": "/app/saved",
+      "loadTimeMs": 268,
+      "headingHierarchyOk": false,
+      "headingsFound": [
+        "h2"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 2,
+      "missingLabelsCount": 0
+    },
+    {
+      "url": "/app/applications",
+      "loadTimeMs": 260,
+      "headingHierarchyOk": false,
+      "headingsFound": [
+        "h2"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 2,
+      "missingLabelsCount": 0
+    },
+    {
+      "url": "/app/ai-matches",
+      "loadTimeMs": 267,
+      "headingHierarchyOk": false,
+      "headingsFound": [
+        "h2"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 2,
+      "missingLabelsCount": 0
+    },
+    {
+      "url": "/app/settings",
+      "loadTimeMs": 272,
+      "headingHierarchyOk": false,
+      "headingsFound": [
+        "h2"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 2,
+      "missingLabelsCount": 0
+    },
+    {
+      "url": "/app/recruiter",
+      "loadTimeMs": 260,
+      "headingHierarchyOk": false,
+      "headingsFound": [
+        "h2"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 2,
+      "missingLabelsCount": 0
+    },
+    {
+      "url": "/app/recruiter/post",
+      "loadTimeMs": 271,
+      "headingHierarchyOk": false,
+      "headingsFound": [
+        "h2"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 2,
+      "missingLabelsCount": 0
+    },
+    {
+      "url": "/app/recruiter/applicants",
+      "loadTimeMs": 225,
+      "headingHierarchyOk": false,
+      "headingsFound": [
+        "h2"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 2,
+      "missingLabelsCount": 0
+    },
+    {
+      "url": "/app/recruiter/settings",
+      "loadTimeMs": 251,
+      "headingHierarchyOk": false,
+      "headingsFound": [
+        "h2"
+      ],
+      "imagesCheckedCount": 0,
+      "missingAltCount": 0,
+      "inputsCheckedCount": 2,
+      "missingLabelsCount": 0
+    }
+  ],
+  "issues": [
+    {
+      "id": "acc-heading--login",
+      "title": "Incorrect Heading Hierarchy",
+      "description": "Page does not contain an h1 heading but contains h2 or subheadings: [h2]",
+      "affectedPage": "/login",
+      "severity": "Medium",
+      "screenshotPath": "screenshots/_login.png",
+      "reproductionSteps": [
+        "Navigate to page: /login",
+        "Inspect HTML heading element tags"
+      ],
+      "expectedBehavior": "Page should start with a single h1 heading tag for search engine optimization and screen reader readability.",
+      "actualBehavior": "Page starts with heading level tags: [h2] without h1 root.",
+      "suggestedFix": "Wrap page title in an <h1> element or adjust subheading tags accordingly."
+    },
+    {
+      "id": "acc-heading--signup",
+      "title": "Incorrect Heading Hierarchy",
+      "description": "Page does not contain an h1 heading but contains h2 or subheadings: [h2]",
+      "affectedPage": "/signup",
+      "severity": "Medium",
+      "screenshotPath": "screenshots/_signup.png",
+      "reproductionSteps": [
+        "Navigate to page: /signup",
+        "Inspect HTML heading element tags"
+      ],
+      "expectedBehavior": "Page should start with a single h1 heading tag for search engine optimization and screen reader readability.",
+      "actualBehavior": "Page starts with heading level tags: [h2] without h1 root.",
+      "suggestedFix": "Wrap page title in an <h1> element or adjust subheading tags accordingly."
+    },
+    {
+      "id": "acc-heading--app-dashboard",
+      "title": "Incorrect Heading Hierarchy",
+      "description": "Page does not contain an h1 heading but contains h2 or subheadings: [h2]",
+      "affectedPage": "/app/dashboard",
+      "severity": "Medium",
+      "screenshotPath": "screenshots/_app_dashboard.png",
+      "reproductionSteps": [
+        "Navigate to page: /app/dashboard",
+        "Inspect HTML heading element tags"
+      ],
+      "expectedBehavior": "Page should start with a single h1 heading tag for search engine optimization and screen reader readability.",
+      "actualBehavior": "Page starts with heading level tags: [h2] without h1 root.",
+      "suggestedFix": "Wrap page title in an <h1> element or adjust subheading tags accordingly."
+    },
+    {
+      "id": "acc-heading--app-saved",
+      "title": "Incorrect Heading Hierarchy",
+      "description": "Page does not contain an h1 heading but contains h2 or subheadings: [h2]",
+      "affectedPage": "/app/saved",
+      "severity": "Medium",
+      "screenshotPath": "screenshots/_app_saved.png",
+      "reproductionSteps": [
+        "Navigate to page: /app/saved",
+        "Inspect HTML heading element tags"
+      ],
+      "expectedBehavior": "Page should start with a single h1 heading tag for search engine optimization and screen reader readability.",
+      "actualBehavior": "Page starts with heading level tags: [h2] without h1 root.",
+      "suggestedFix": "Wrap page title in an <h1> element or adjust subheading tags accordingly."
+    },
+    {
+      "id": "acc-heading--app-applications",
+      "title": "Incorrect Heading Hierarchy",
+      "description": "Page does not contain an h1 heading but contains h2 or subheadings: [h2]",
+      "affectedPage": "/app/applications",
+      "severity": "Medium",
+      "screenshotPath": "screenshots/_app_applications.png",
+      "reproductionSteps": [
+        "Navigate to page: /app/applications",
+        "Inspect HTML heading element tags"
+      ],
+      "expectedBehavior": "Page should start with a single h1 heading tag for search engine optimization and screen reader readability.",
+      "actualBehavior": "Page starts with heading level tags: [h2] without h1 root.",
+      "suggestedFix": "Wrap page title in an <h1> element or adjust subheading tags accordingly."
+    },
+    {
+      "id": "acc-heading--app-ai-matches",
+      "title": "Incorrect Heading Hierarchy",
+      "description": "Page does not contain an h1 heading but contains h2 or subheadings: [h2]",
+      "affectedPage": "/app/ai-matches",
+      "severity": "Medium",
+      "screenshotPath": "screenshots/_app_ai_matches.png",
+      "reproductionSteps": [
+        "Navigate to page: /app/ai-matches",
+        "Inspect HTML heading element tags"
+      ],
+      "expectedBehavior": "Page should start with a single h1 heading tag for search engine optimization and screen reader readability.",
+      "actualBehavior": "Page starts with heading level tags: [h2] without h1 root.",
+      "suggestedFix": "Wrap page title in an <h1> element or adjust subheading tags accordingly."
+    },
+    {
+      "id": "acc-heading--app-settings",
+      "title": "Incorrect Heading Hierarchy",
+      "description": "Page does not contain an h1 heading but contains h2 or subheadings: [h2]",
+      "affectedPage": "/app/settings",
+      "severity": "Medium",
+      "screenshotPath": "screenshots/_app_settings.png",
+      "reproductionSteps": [
+        "Navigate to page: /app/settings",
+        "Inspect HTML heading element tags"
+      ],
+      "expectedBehavior": "Page should start with a single h1 heading tag for search engine optimization and screen reader readability.",
+      "actualBehavior": "Page starts with heading level tags: [h2] without h1 root.",
+      "suggestedFix": "Wrap page title in an <h1> element or adjust subheading tags accordingly."
+    },
+    {
+      "id": "acc-heading--app-recruiter",
+      "title": "Incorrect Heading Hierarchy",
+      "description": "Page does not contain an h1 heading but contains h2 or subheadings: [h2]",
+      "affectedPage": "/app/recruiter",
+      "severity": "Medium",
+      "screenshotPath": "screenshots/_app_recruiter.png",
+      "reproductionSteps": [
+        "Navigate to page: /app/recruiter",
+        "Inspect HTML heading element tags"
+      ],
+      "expectedBehavior": "Page should start with a single h1 heading tag for search engine optimization and screen reader readability.",
+      "actualBehavior": "Page starts with heading level tags: [h2] without h1 root.",
+      "suggestedFix": "Wrap page title in an <h1> element or adjust subheading tags accordingly."
+    },
+    {
+      "id": "acc-heading--app-recruiter-post",
+      "title": "Incorrect Heading Hierarchy",
+      "description": "Page does not contain an h1 heading but contains h2 or subheadings: [h2]",
+      "affectedPage": "/app/recruiter/post",
+      "severity": "Medium",
+      "screenshotPath": "screenshots/_app_recruiter_post.png",
+      "reproductionSteps": [
+        "Navigate to page: /app/recruiter/post",
+        "Inspect HTML heading element tags"
+      ],
+      "expectedBehavior": "Page should start with a single h1 heading tag for search engine optimization and screen reader readability.",
+      "actualBehavior": "Page starts with heading level tags: [h2] without h1 root.",
+      "suggestedFix": "Wrap page title in an <h1> element or adjust subheading tags accordingly."
+    },
+    {
+      "id": "acc-heading--app-recruiter-applicants",
+      "title": "Incorrect Heading Hierarchy",
+      "description": "Page does not contain an h1 heading but contains h2 or subheadings: [h2]",
+      "affectedPage": "/app/recruiter/applicants",
+      "severity": "Medium",
+      "screenshotPath": "screenshots/_app_recruiter_applicants.png",
+      "reproductionSteps": [
+        "Navigate to page: /app/recruiter/applicants",
+        "Inspect HTML heading element tags"
+      ],
+      "expectedBehavior": "Page should start with a single h1 heading tag for search engine optimization and screen reader readability.",
+      "actualBehavior": "Page starts with heading level tags: [h2] without h1 root.",
+      "suggestedFix": "Wrap page title in an <h1> element or adjust subheading tags accordingly."
+    },
+    {
+      "id": "acc-heading--app-recruiter-settings",
+      "title": "Incorrect Heading Hierarchy",
+      "description": "Page does not contain an h1 heading but contains h2 or subheadings: [h2]",
+      "affectedPage": "/app/recruiter/settings",
+      "severity": "Medium",
+      "screenshotPath": "screenshots/_app_recruiter_settings.png",
+      "reproductionSteps": [
+        "Navigate to page: /app/recruiter/settings",
+        "Inspect HTML heading element tags"
+      ],
+      "expectedBehavior": "Page should start with a single h1 heading tag for search engine optimization and screen reader readability.",
+      "actualBehavior": "Page starts with heading level tags: [h2] without h1 root.",
+      "suggestedFix": "Wrap page title in an <h1> element or adjust subheading tags accordingly."
+    }
+  ],
+  "consoleLogs": [
+    "[Console WARNING] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition."
+  ],
+  "networkFailures": []
+}
