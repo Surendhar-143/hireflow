@@ -17,7 +17,7 @@ importers:
       '@hireflow/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@hireflow/schemas':
+      'flow/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
       '@prisma/client':
@@ -81,10 +81,10 @@ importers:
 
   frontend/web:
     dependencies:
-      '@hireflow/schemas':
+      'flow/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
-      '@hireflow/types':
+      'flow/types':
         specifier: workspace:*
         version: link:../../packages/types
       '@radix-ui/react-avatar':
