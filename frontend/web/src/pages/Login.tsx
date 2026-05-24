@@ -77,13 +77,13 @@ export default function Login() {
           </div>
           <span className="font-black text-xl text-foreground tracking-tight">HireFlow</span>
         </Link>
-        <h2 className="text-2xl font-black tracking-tight text-foreground mt-4">
+        <h1 className="text-2xl font-black tracking-tight text-foreground mt-4">
           {mode === 'password'
             ? 'Sign in to your account'
             : mode === 'magic'
             ? 'Access via Magic Link'
             : 'Reset your password'}
-        </h2>
+        </h1>
         <p className="text-xs text-muted-foreground">
           {mode === 'password'
             ? 'Secure, passwordless and email logins'

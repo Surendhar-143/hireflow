@@ -68,9 +68,9 @@ export default function Signup() {
           </div>
           <span className="font-black text-xl text-foreground tracking-tight">HireFlow</span>
         </Link>
-        <h2 className="text-2xl font-black tracking-tight text-foreground mt-4">
+        <h1 className="text-2xl font-black tracking-tight text-foreground mt-4">
           Create your account
-        </h2>
+        </h1>
         <p className="text-xs text-muted-foreground">
           Step into a premium, AI-native talent discovery ecosystem
         </p>

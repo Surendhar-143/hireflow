@@ -241,9 +241,9 @@ export default function PostJob() {
               className="space-y-4"
             >
               <div className="space-y-1">
-                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
                   <Briefcase className="size-5 text-brand-400" /> Job Specification
-                </h2>
+                </h1>
                 <p className="text-xs text-muted-foreground">{steps[0].desc}</p>
               </div>
 

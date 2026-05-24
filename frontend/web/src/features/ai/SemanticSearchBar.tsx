@@ -108,6 +108,7 @@ export function SemanticSearchBar({ initialValue, onSearch, onClear }: SemanticS
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder={hasPills ? "" : "Ask for 'remote senior react roles over $150k'..."}
+          aria-label="Search jobs"
           className={cn(
             "flex-1 h-11 bg-transparent px-2 text-sm focus-visible:outline-none",
             // Hide real text when pills are showing to prevent overlapping mess
