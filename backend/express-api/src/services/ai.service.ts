@@ -7,6 +7,16 @@ export class AIService {
     return config.FASTAPI_AI_URL
   }
 
+  private isAiAvailable(): boolean {
+    const url = config.FASTAPI_AI_URL
+    // In production, if FastAPI URL is still the default localhost/127.0.0.1, the AI container is not co-located inside the same Railway container.
+    // We immediately bypass the fetch request to avoid the 5s timeout and return fallback data instantly (under 5ms).
+    if (config.NODE_ENV === 'production' && (url.includes('localhost') || url.includes('127.0.0.1'))) {
+      return false
+    }
+    return true
+  }
+
   /**
    * Semantic job search via FastAPI embedding service.
    * Results are cached per query+job-set hash for 30s to avoid redundant inference.
@@ -21,6 +31,13 @@ export class AIService {
     if (cached) {
       logger.debug({ query }, 'AI semantic search cache hit')
       return cached
+    }
+
+    if (!this.isAiAvailable()) {
+      logger.debug({ query }, 'AI Service pointing to localhost in production. Bypassing fetch to instantly trigger keyword fallback.')
+      const fallbackResults = this._keywordFallback(query, jobs)
+      cacheSet(cacheKey, fallbackResults, 30 * 1000)
+      return fallbackResults
     }
 
     const controller = new AbortController()
@@ -88,6 +105,13 @@ export class AIService {
       return cached
     }
 
+    if (!this.isAiAvailable()) {
+      logger.debug({ candidateId: candidate.id }, 'AI Service pointing to localhost in production. Bypassing fetch to instantly trigger Jaccard fallback.')
+      const fallbackResults = this._jaccardFallback(candidate, jobs)
+      cacheSet(cacheKey, fallbackResults, 60 * 1000)
+      return fallbackResults
+    }
+
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 5000)
 
@@ -143,6 +167,11 @@ export class AIService {
   }
 
   async parseResume(resumeText: string): Promise<any> {
+    if (!this.isAiAvailable()) {
+      logger.debug('AI Service pointing to localhost in production. Bypassing fetch to instantly trigger regex parser fallback.')
+      return this._regexParseFallback(resumeText)
+    }
+
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 5000)
 
@@ -169,26 +198,30 @@ export class AIService {
         'FastAPI AI resume parsing failed. Falling back to local regex parser.'
       )
 
-      const emailMatch = resumeText.match(/[\w.-]+@[\w.-]+\.\w+/)
-      const email = emailMatch ? emailMatch[0] : ''
+      return this._regexParseFallback(resumeText)
+    }
+  }
 
-      const commonSkills = ['python', 'javascript', 'typescript', 'react', 'node.js', 'sql', 'docker', 'aws']
-      const extractedSkills: string[] = []
-      for (const skill of commonSkills) {
-        if (new RegExp(`\\b${skill}\\b`, 'i').test(resumeText)) {
-          extractedSkills.push(skill.toUpperCase())
-        }
-      }
+  private _regexParseFallback(resumeText: string): any {
+    const emailMatch = resumeText.match(/[\w.-]+@[\w.-]+\.\w+/)
+    const email = emailMatch ? emailMatch[0] : ''
 
-      return {
-        name: 'Extracted Candidate',
-        email,
-        headline: 'Software Engineer',
-        bio: 'Self-motivated professional developer.',
-        skills: extractedSkills,
-        experience: [],
-        education: [],
+    const commonSkills = ['python', 'javascript', 'typescript', 'react', 'node.js', 'sql', 'docker', 'aws']
+    const extractedSkills: string[] = []
+    for (const skill of commonSkills) {
+      if (new RegExp(`\\b${skill}\\b`, 'i').test(resumeText)) {
+        extractedSkills.push(skill.toUpperCase())
       }
+    }
+
+    return {
+      name: 'Extracted Candidate',
+      email,
+      headline: 'Software Engineer',
+      bio: 'Self-motivated professional developer.',
+      skills: extractedSkills,
+      experience: [],
+      education: [],
     }
   }
 
@@ -197,6 +230,17 @@ export class AIService {
    * Explicit 10s connection timeout to prevent hanging open connections.
    */
   async streamChatAssistant(message: string, context: any, res: any) {
+    if (!this.isAiAvailable()) {
+      logger.debug('AI Service pointing to localhost in production. Bypassing fetch to instantly trigger chat assistant offline mode.')
+      res.setHeader('Content-Type', 'text/event-stream')
+      res.setHeader('Cache-Control', 'no-cache')
+      res.setHeader('Connection', 'keep-alive')
+      res.write('data: I am running in offline mode. Local match metrics are fully active, but interactive chat assistant requires the live FastAPI AI Service to be active! \n\n')
+      res.write('data: [DONE]\n\n')
+      res.end()
+      return
+    }
+
     const controller = new AbortController()
     const timeoutId = setTimeout(() => {
       controller.abort()
