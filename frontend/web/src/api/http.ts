@@ -1,6 +1,6 @@
 import { telemetry } from '@/lib/observability'
 
-const API_BASE = (import.meta as any).env?.VITE_API_URL ?? 'http://localhost:8000/api/v1'
+const API_BASE = (import.meta as any).env?.VITE_API_URL ?? 'https://hireflow-backend.onrender.com/api/v1'
 const DEFAULT_TIMEOUT_MS = (import.meta as any).env?.DEV ? 15_000 : 60_000
 
 function getAuthHeader(): string {
