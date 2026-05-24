@@ -1,54 +1,24 @@
 import React from 'react'
-import { useLocation, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Search, Bell, Sun, Moon, Command, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Avatar } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { useUIStore } from '@/store/ui-store'
+import { useAuth } from '@/components/auth/AuthContext'
 
-const BREADCRUMB_MAP: Record<string, string> = {
-  app: 'Home',
-  jobs: 'Browse Jobs',
-  dashboard: 'Dashboard',
-  companies: 'Companies',
-  saved: 'Saved Jobs',
-  applications: 'Applications',
-  recruiter: 'Recruiter',
-  'ai-matches': 'AI Matches',
-  settings: 'Settings',
-}
-
-function Breadcrumbs() {
-  const location = useLocation()
-  const segments = location.pathname.split('/').filter(Boolean)
-
-  return (
-    <nav aria-label="Breadcrumb" className="hidden md:flex items-center gap-1 text-sm">
-      {segments.map((seg, i) => {
-        const label = BREADCRUMB_MAP[seg] ?? seg
-        const isLast = i === segments.length - 1
-        const href = '/' + segments.slice(0, i + 1).join('/')
-        return (
-          <React.Fragment key={seg}>
-            {i > 0 && <span className="text-muted-foreground/50 select-none">/</span>}
-            {isLast ? (
-              <span className="text-foreground font-medium">{label}</span>
-            ) : (
-              <Link to={href} className="text-muted-foreground hover:text-foreground transition-colors">
-                {label}
-              </Link>
-            )}
-          </React.Fragment>
-        )
-      })}
-    </nav>
-  )
-}
 
 export function TopNav() {
   const { theme, toggleTheme, setCommandMenuOpen, setCopilotOpen } = useUIStore()
+  const { user } = useAuth()
+
+  // Derive display name: prefer full name, fall back to email username, then 'User'
+  const displayName = user?.name
+    ? user.name.split(' ')[0]
+    : user?.email
+    ? user.email.split('@')[0]
+    : 'User'
+  const fullName = user?.name || user?.email || 'User'
 
   return (
     <header
@@ -59,9 +29,7 @@ export function TopNav() {
       )}
       style={{ '--sidebar-width': 'var(--sidebar-width)' } as React.CSSProperties}
     >
-      {/* Breadcrumbs */}
-      <Breadcrumbs />
-
+      {/* Spacer pushes controls to the right */}
       <div className="flex-1" />
 
       {/* Quick search */}
@@ -112,8 +80,8 @@ export function TopNav() {
 
       {/* User */}
       <button className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-accent transition-colors" aria-label="User menu">
-        <Avatar name="Alex Johnson" size="sm" />
-        <span className="hidden lg:block text-sm font-medium text-foreground">Alex</span>
+        <Avatar src={user?.avatar || undefined} name={fullName} size="sm" />
+        <span className="hidden lg:block text-sm font-medium text-foreground">{displayName}</span>
       </button>
     </header>
   )
