@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "source": "dist/backend-deploy",
+    "codebase": "default",
+    "predeploy": [
+      "pnpm --filter @hireflow/express-api build",
+      "node -e \"require('fs').rmSync('dist/backend-deploy', { recursive: true, force: true })\"",
+      "pnpm --filter @hireflow/express-api --prod deploy --legacy dist/backend-deploy"
+    ]
+  }
+}

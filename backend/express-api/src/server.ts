@@ -121,11 +121,21 @@ process.on('uncaughtException', (err) => {
 
 const PORT = config.PORT
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && !process.env.FIREBASE_CONFIG && !process.env.FUNCTIONS_EMULATOR) {
   app.listen(PORT, () => {
     logger.info(`Express API Gateway running in ${config.NODE_ENV} mode on port ${PORT}`)
     logger.info(`CORS allowed origins: ${allowedOrigins.join(', ')}`)
   })
 }
+
+export { app }
+
+// Export as a Firebase Cloud Function for serverless hosting
+import { onRequest } from 'firebase-functions/v2/https'
+export const api = onRequest({
+  cors: true,
+  maxInstances: 10,
+  minInstances: 0,
+}, app)
 
 export default app
