@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Stagger, StaggerItem, FadeIn } from '@/components/motion'
 import { useRecruiterDashboard } from '@/hooks/useQueries'
 import { cn } from '@/lib/utils'
+import type { JobDTO } from '@hireflow/types'
 
 // Mock recruiter stats
 const RECRUITER_STATS = [
@@ -85,7 +86,7 @@ export default function RecruiterDashboard() {
                 <Skeleton className="h-[104px] rounded-2xl" />
               </>
             ) : (
-              postedJobs.map((job) => (
+              postedJobs.map((job: JobDTO) => (
                 <div key={job.id} className="bg-card border border-border rounded-2xl p-4 hover:border-ring/30 transition-colors">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex-1 min-w-0">

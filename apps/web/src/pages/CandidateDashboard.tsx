@@ -13,6 +13,7 @@ import { JobCard } from '@/features/jobs/JobCard'
 import { useSearchStore } from '@/store/search-store'
 import { useCandidateDashboard, useJobs } from '@/hooks/useQueries'
 import { cn } from '@/lib/utils'
+import type { JobDTO } from '@hireflow/types'
 
 // ─── Stat card ────────────────────────────────────────────────────────────────
 function StatCard({
@@ -145,7 +146,7 @@ export default function CandidateDashboard() {
                   <SkeletonJobCard />
                 </>
               ) : (
-                aiMatches.slice(0, 3).map((job, i) => <JobCard key={job.id} job={job} index={i} />)
+                aiMatches.slice(0, 3).map((job: JobDTO, i: number) => <JobCard key={job.id} job={job} index={i} />)
               )}
             </div>
           </section>

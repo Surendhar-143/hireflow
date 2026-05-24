@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { sendSuccess } from '../utils/response'
 import { companyRouter } from './company.routes'
 import { jobRouter } from './job.routes'
+import { searchRouter } from './search.routes'
 import { applicationRouter } from './application.routes'
 import { uploadRouter } from './upload.routes'
 import { recruiterRouter } from './recruiter.routes'
@@ -20,6 +21,7 @@ apiRouter.get('/health', (req, res) => {
       status: 'ok',
       timestamp: new Date().toISOString(),
       service: 'express-api-gateway',
+      version: '1.0.0',
     },
     'Gateway operational'
   )
@@ -29,6 +31,7 @@ apiRouter.get('/health', (req, res) => {
 apiRouter.use('/auth', authRouter)
 apiRouter.use('/companies', companyRouter)
 apiRouter.use('/jobs', jobRouter)
+apiRouter.use('/search', searchRouter)
 apiRouter.use('/applications', applicationRouter)
 apiRouter.use('/uploads', uploadRouter)
 apiRouter.use('/recruiter', recruiterRouter)

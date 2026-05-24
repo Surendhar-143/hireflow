@@ -3,13 +3,46 @@ import { Prisma } from '@prisma/client'
 
 export class UserRepository {
   async findById(id: string) {
-    return prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
       where: { id },
       include: {
         candidateProfile: true,
         recruiterProfile: true,
       },
     })
+    if (!user) {
+      const candidateProfile = await prisma.candidateProfile.findUnique({
+        where: { id },
+        include: {
+          user: {
+            include: {
+              candidateProfile: true,
+              recruiterProfile: true,
+            },
+          },
+        },
+      })
+      if (candidateProfile) {
+        user = candidateProfile.user as any
+      }
+    }
+    if (!user) {
+      const recruiterProfile = await prisma.recruiterProfile.findUnique({
+        where: { id },
+        include: {
+          user: {
+            include: {
+              candidateProfile: true,
+              recruiterProfile: true,
+            },
+          },
+        },
+      })
+      if (recruiterProfile) {
+        user = recruiterProfile.user as any
+      }
+    }
+    return user
   }
 
   async findByEmail(email: string) {

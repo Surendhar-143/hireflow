@@ -4,15 +4,24 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "outDir": "./dist",
-    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "composite": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@hireflow/types": ["../../packages/types/src/index.ts"],
+      "@hireflow/schemas": ["../../packages/schemas/src/index.ts"],
+      "@hireflow/config": ["../../packages/config/src/index.ts"]
     }
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*",
+    "../../packages/types/src/**/*",
+    "../../packages/schemas/src/**/*",
+    "../../packages/config/src/**/*"
+  ]
 }

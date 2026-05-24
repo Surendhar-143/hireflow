@@ -1,3 +1,49 @@
+// ─── Standard API Response Envelope ─────────────────────────────────────────
+
+export interface ApiResponse<T> {
+  success: boolean
+  message: string
+  data: T
+  meta: ApiMeta
+}
+
+export interface ApiMeta {
+  // Cursor-based pagination (jobs)
+  nextCursor?: string
+  hasMore?: boolean
+  limit?: number
+  // Offset-based pagination (companies)
+  total?: number
+  page?: number
+  pageSize?: number
+  // Timing
+  took?: number
+}
+
+export interface ApiError {
+  success: false
+  message: string
+  errors?: { field?: string; message: string }[]
+}
+
+// ─── Cursor Pagination ────────────────────────────────────────────────────────
+
+export interface CursorPage<T> {
+  data: T[]
+  nextCursor: string | undefined
+  hasMore: boolean
+}
+
+// ─── Offset Pagination ────────────────────────────────────────────────────────
+
+export interface OffsetPage<T> {
+  data: T[]
+  total: number
+  page: number
+  pageSize: number
+  hasMore: boolean
+}
+
 // ─── Common ──────────────────────────────────────────────────────────────────
 
 export type ID = string
@@ -35,12 +81,13 @@ export type ApplicationStatus =
   | 'rejected'
   | 'withdrawn'
 
-export interface Job extends Timestamps {
+// DTO — what frontend receives — never raw DB shape
+export interface JobDTO extends Timestamps {
   id: ID
   title: string
   slug: string
   companyId: ID
-  company: CompanySummary
+  company: CompanySummaryDTO
   description: string
   requirements: string[]
   benefits: string[]
@@ -57,6 +104,9 @@ export interface Job extends Timestamps {
   aiMatchScore?: number
 }
 
+// Backward-compat alias
+export type Job = JobDTO
+
 export interface JobFilters {
   query?: string
   type?: JobType[]
@@ -67,7 +117,11 @@ export interface JobFilters {
   salaryMin?: number
   salaryMax?: number
   companyId?: string
+  featured?: boolean
   postedWithin?: '24h' | '7d' | '30d'
+  cursor?: string
+  limit?: number
+  sortBy?: 'recent' | 'salary' | 'applicants'
 }
 
 // ─── Companies ───────────────────────────────────────────────────────────────
@@ -75,7 +129,7 @@ export interface JobFilters {
 export type CompanySize = 'startup' | 'small' | 'medium' | 'large' | 'enterprise'
 export type CompanyStage = 'pre-seed' | 'seed' | 'series-a' | 'series-b' | 'series-c' | 'public'
 
-export interface CompanySummary {
+export interface CompanySummaryDTO {
   id: ID
   name: string
   slug: string
@@ -85,7 +139,10 @@ export interface CompanySummary {
   verified: boolean
 }
 
-export interface Company extends CompanySummary, Timestamps {
+// Backward-compat alias
+export type CompanySummary = CompanySummaryDTO
+
+export interface CompanyDTO extends CompanySummaryDTO, Timestamps {
   description: string
   website: string
   linkedin?: string
@@ -100,7 +157,12 @@ export interface Company extends CompanySummary, Timestamps {
   culture: CultureValue[]
   coverImage?: string
   followerCount: number
+  // Derived — included in detail view
+  jobs?: JobDTO[]
 }
+
+// Backward-compat alias
+export type Company = CompanyDTO
 
 export interface CultureValue {
   icon: string
@@ -108,11 +170,26 @@ export interface CultureValue {
   description: string
 }
 
+// ─── Search ──────────────────────────────────────────────────────────────────
+
+export interface SearchQuery {
+  q: string
+  type?: 'jobs' | 'companies' | 'all'
+  limit?: number
+}
+
+export interface SearchResultDTO {
+  jobs: JobDTO[]
+  companies: CompanyDTO[]
+  total: number
+  took: number
+}
+
 // ─── Users ───────────────────────────────────────────────────────────────────
 
 export type UserRole = 'candidate' | 'recruiter' | 'admin'
 
-export interface User extends Timestamps {
+export interface UserDTO extends Timestamps {
   id: ID
   email: string
   name: string
@@ -121,7 +198,9 @@ export interface User extends Timestamps {
   onboardingCompleted: boolean
 }
 
-export interface CandidateProfile extends User {
+export type User = UserDTO
+
+export interface CandidateProfileDTO extends UserDTO {
   headline?: string
   bio?: string
   location?: string
@@ -137,12 +216,16 @@ export interface CandidateProfile extends User {
   profileCompletionScore: number
 }
 
-export interface RecruiterProfile extends User {
+export type CandidateProfile = CandidateProfileDTO
+
+export interface RecruiterProfileDTO extends UserDTO {
   companyId: ID
-  company: CompanySummary
+  company: CompanySummaryDTO
   title: string
   bio?: string
 }
+
+export type RecruiterProfile = RecruiterProfileDTO
 
 export interface WorkExperience {
   id: ID
@@ -168,12 +251,12 @@ export interface Education {
 
 // ─── Applications ─────────────────────────────────────────────────────────────
 
-export interface Application extends Timestamps {
+export interface ApplicationDTO extends Timestamps {
   id: ID
   jobId: ID
-  job: Job
+  job: JobDTO
   candidateId: ID
-  candidate: CandidateProfile
+  candidate: CandidateProfileDTO
   status: ApplicationStatus
   timeline: ApplicationEvent[]
   coverLetter?: string
@@ -182,12 +265,23 @@ export interface Application extends Timestamps {
   notes?: string
 }
 
+export type Application = ApplicationDTO
+
 export interface ApplicationEvent {
   id: ID
   status: ApplicationStatus
   timestamp: string
   note?: string
   actor?: string
+}
+
+// ─── Saved Jobs ───────────────────────────────────────────────────────────────
+
+export interface SavedJobDTO extends Timestamps {
+  id: ID
+  jobId: ID
+  job: JobDTO
+  candidateId: ID
 }
 
 // ─── Navigation ──────────────────────────────────────────────────────────────

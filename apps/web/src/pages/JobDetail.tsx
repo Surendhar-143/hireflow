@@ -13,7 +13,7 @@ import { EmptyState } from '@/components/feedback/EmptyState'
 import { useSearchStore } from '@/store/search-store'
 import { JobCard } from '@/features/jobs/JobCard'
 import { AIMatchAnalysis } from '@/features/ai/AIMatchAnalysis'
-import { useJob, useJobs } from '@/hooks/useQueries'
+import { useJob, useRelatedJobs } from '@/hooks/useQueries'
 import { useSEO } from '@/hooks/useSEO'
 import { Skeleton, SkeletonText, SkeletonCircle } from '@/components/ui/skeleton'
 
@@ -26,10 +26,13 @@ export default function JobDetail() {
   const { toggleSaveJob, isJobSaved } = useSearchStore()
   
   const { data: job, isLoading } = useJob(id)
-  
-  // Fetch related jobs
-  const { data: allJobsData } = useJobs()
-  const related = allJobsData?.data.filter((j) => j.id !== id && j.companyId === job?.companyId).slice(0, 2) || []
+
+  // Dedicated related-jobs query — fetches by company + skills, not all jobs
+  const { data: related = [] } = useRelatedJobs(
+    job?.id,
+    job?.company?.id,
+    job?.skills
+  )
 
   useSEO({
     title: job ? `${job.title} at ${job.company.name}` : 'Job Details',
