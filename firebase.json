@@ -3,7 +3,7 @@
     "source": "dist/backend-deploy",
     "codebase": "default",
     "predeploy": [
-      "node scripts/predeploy-backend.js"
+      "node ../../scripts/predeploy-backend.js"
     ]
   }
 }
