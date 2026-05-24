@@ -1,6 +1,6 @@
 import { lazy } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
-import { DashboardLayout, MarketingLayout, MinimalLayout } from '@/components/layout/Layouts'
+import { CandidateDashboardLayout, RecruiterDashboardLayout, MarketingLayout, MinimalLayout } from '@/components/layout/Layouts'
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
 
 // ─── Lazy pages ──────────────────────────────────────────────────────────────
@@ -29,10 +29,10 @@ export const router = createBrowserRouter([
       { path: '/jobs/:id', element: <JobDetail /> },
     ],
   },
-  // ── App (with sidebar) ─────────────────────────────────────────────────────
+  // ── App Candidate Scope (with candidate sidebar nav) ──────────────────────
   {
     path: '/app',
-    element: <DashboardLayout />,
+    element: <CandidateDashboardLayout />,
     errorElement: <ErrorBoundary><div /></ErrorBoundary>,
     children: [
       { index: true, element: <Navigate to="/app/dashboard" replace /> },
@@ -44,8 +44,20 @@ export const router = createBrowserRouter([
       { path: 'saved', element: <SavedJobs /> },
       { path: 'applications', element: <Applications /> },
       { path: 'ai-matches', element: <AIMatches /> },
-      { path: 'recruiter', element: <RecruiterDashboard /> },
-      { path: 'settings', element: <div className="p-6"><h1 className="text-2xl font-bold">Settings</h1><p className="text-muted-foreground mt-1">Coming in Phase 4.</p></div> },
+      { path: 'settings', element: <div className="p-6"><h1 className="text-2xl font-bold">Settings</h1><p className="text-muted-foreground mt-1">Configure candidate accounts and features.</p></div> },
+    ],
+  },
+  // ── App Recruiter Scope (with recruiter sidebar nav) ──────────────────────
+  {
+    path: '/app/recruiter',
+    element: <RecruiterDashboardLayout />,
+    errorElement: <ErrorBoundary><div /></ErrorBoundary>,
+    children: [
+      { index: true, element: <RecruiterDashboard /> },
+      { path: 'post', element: <div className="p-6"><h1 className="text-2xl font-bold">Post a New Job</h1><p className="text-muted-foreground mt-1">Step-by-step publisher form coming in Phase 3.</p></div> },
+      { path: 'applicants', element: <div className="p-6"><h1 className="text-2xl font-bold">Applicants Hub</h1><p className="text-muted-foreground mt-1">Candidate applications tracking coming in Phase 2.</p></div> },
+      { path: 'analytics', element: <div className="p-6"><h1 className="text-2xl font-bold">Company Analytics</h1><p className="text-muted-foreground mt-1">Detailed recruitment logs and charts coming in Phase 3.</p></div> },
+      { path: 'settings', element: <div className="p-6"><h1 className="text-2xl font-bold">Recruiter Settings</h1><p className="text-muted-foreground mt-1">Configure recruiter permissions and setups.</p></div> },
     ],
   },
   // ── Fallback ───────────────────────────────────────────────────────────────

@@ -26,8 +26,8 @@ function PageSkeleton() {
   )
 }
 
-// ─── Dashboard Layout ────────────────────────────────────────────────────────
-export function DashboardLayout() {
+// ─── Candidate Dashboard Layout ──────────────────────────────────────────────
+export function CandidateDashboardLayout() {
   const { sidebarCollapsed } = useUIStore()
   const location = useLocation()
 
@@ -35,7 +35,7 @@ export function DashboardLayout() {
     <div className="min-h-screen bg-background">
       <CommandMenu />
       <AICopilot />
-      <Sidebar />
+      <Sidebar role="candidate" />
       <TopNav />
       <main
         className={cn(
@@ -62,6 +62,55 @@ export function DashboardLayout() {
           </Suspense>
         </ErrorBoundary>
       </main>
+    </div>
+  )
+}
+
+// ─── Recruiter Dashboard Layout ──────────────────────────────────────────────
+export function RecruiterDashboardLayout() {
+  const { sidebarCollapsed } = useUIStore()
+  const location = useLocation()
+
+  return (
+    <div className="min-h-screen bg-background">
+      <CommandMenu />
+      <AICopilot />
+      <Sidebar role="recruiter" />
+      <TopNav />
+      <main
+        className={cn(
+          'transition-all duration-slow pt-14',
+          sidebarCollapsed
+            ? 'pl-[var(--sidebar-collapsed-width)]'
+            : 'pl-[var(--sidebar-width)]'
+        )}
+      >
+        <ErrorBoundary>
+          <Suspense fallback={<PageSkeleton />}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                variants={pageVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="min-h-[calc(100vh-56px)]"
+              >
+                <Outlet />
+              </motion.div>
+            </AnimatePresence>
+          </Suspense>
+        </ErrorBoundary>
+      </main>
+    </div>
+  )
+}
+
+// ─── Analytics Layout ────────────────────────────────────────────────────────
+export function AnalyticsLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+      {children}
     </div>
   )
 }

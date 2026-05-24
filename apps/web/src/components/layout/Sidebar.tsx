@@ -97,10 +97,9 @@ function NavItem({ href, icon: Icon, label, badge, collapsed }: NavItemProps) {
   )
 }
 
-export function Sidebar() {
+export function Sidebar({ role = 'candidate' }: { role?: 'candidate' | 'recruiter' }) {
   const { sidebarCollapsed, toggleSidebar } = useUIStore()
-  const [mode] = useState<'candidate' | 'recruiter'>('candidate')
-  const nav = mode === 'candidate' ? CANDIDATE_NAV : RECRUITER_NAV
+  const nav = role === 'candidate' ? CANDIDATE_NAV : RECRUITER_NAV
 
   return (
     <motion.aside
@@ -161,7 +160,7 @@ export function Sidebar() {
                 className="flex-1 min-w-0"
               >
                 <p className="text-xs font-medium text-foreground truncate">Alex Johnson</p>
-                <p className="text-[10px] text-muted-foreground truncate">candidate</p>
+                <p className="text-[10px] text-muted-foreground truncate capitalize">{role}</p>
               </motion.div>
             )}
           </AnimatePresence>
