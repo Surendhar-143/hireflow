@@ -1,0 +1,54 @@
+# ─── Dependencies ────────────────────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ─── Build outputs ────────────────────────────────────────────────────────────
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# ─── Turborepo cache ──────────────────────────────────────────────────────────
+.turbo/
+
+# ─── Environment files (NEVER commit secrets) ────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.staging
+
+# ─── Python / FastAPI ─────────────────────────────────────────────────────────
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+*.log
+
+# ─── Prisma generated ─────────────────────────────────────────────────────────
+backend/express-api/node_modules/
+apps/express-api/node_modules/
+
+# ─── Test coverage ────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ─── OS / Editor ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ─── pnpm ────────────────────────────────────────────────────────────────────
+# pnpm-lock.yaml is committed — DO NOT add it here
+
+# ─── Misc ─────────────────────────────────────────────────────────────────────
+*.swp
+*.swo

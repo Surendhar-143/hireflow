@@ -1,0 +1,14 @@
+# Normalize line endings to LF for all tracked files
+* text=auto eol=lf
+
+# Force binary for these file types (no conversion)
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.svg binary
+*.lock binary
