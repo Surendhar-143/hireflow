@@ -58,7 +58,7 @@ export const aiApi = {
     const controller = new AbortController()
     const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('hf_role') : null
     const authHeader = stored === 'recruiter' ? 'Bearer mock-recruiter-token' : 'Bearer mock-candidate-token'
-    const API_BASE = (import.meta as any).env?.VITE_API_URL ?? 'https://hireflow-backend.onrender.com/api/v1'
+    const API_BASE = (import.meta as any).env?.VITE_API_URL ?? 'https://hireflow-d7o9.onrender.com/api/v1'
 
     fetch(`${API_BASE}/ai/chat/assistant`, {
       method: 'POST',
