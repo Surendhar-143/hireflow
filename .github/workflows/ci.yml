@@ -1,6 +1,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # CI Pipeline — runs on every pull request and push to main
 # Jobs: lint → typecheck → build (with Turborepo remote cache)
+# Optimization: node_modules artifact shared across jobs (eliminates 3× reinstalls)
 # ─────────────────────────────────────────────────────────────────────────────
 name: CI
 
@@ -47,6 +48,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Upload node_modules as artifact so downstream jobs don't reinstall
+      - name: Cache node_modules for downstream jobs
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: |
+            node_modules
+            frontend/web/node_modules
+            backend/express-api/node_modules
+            backend/fastapi-ai/.venv
+            packages/**/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
   # ── 2. Lint ────────────────────────────────────────────────────────────────
   lint:
     name: 🔍 Lint
@@ -69,11 +85,24 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
-      - name: Install dependencies
+      - name: Restore cached node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            frontend/web/node_modules
+            backend/express-api/node_modules
+            packages/**/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install dependencies (if cache miss)
         run: pnpm install --frozen-lockfile
 
-      - name: Lint all workspaces
+      - name: Lint — web
         run: pnpm --filter @hireflow/web lint
+
+      - name: Lint — express-api
+        run: pnpm --filter @hireflow/express-api lint --if-present
 
   # ── 3. Type Check ──────────────────────────────────────────────────────────
   typecheck:
@@ -97,7 +126,17 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
-      - name: Install dependencies
+      - name: Restore cached node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            frontend/web/node_modules
+            backend/express-api/node_modules
+            packages/**/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install dependencies (if cache miss)
         run: pnpm install --frozen-lockfile
 
       - name: Type check — web
@@ -128,7 +167,17 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
-      - name: Install dependencies
+      - name: Restore cached node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            frontend/web/node_modules
+            backend/express-api/node_modules
+            packages/**/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install dependencies (if cache miss)
         run: pnpm install --frozen-lockfile
 
       - name: Build all apps (Turborepo)
@@ -136,14 +185,18 @@ jobs:
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:8000/api' }}
 
+      - name: Run unit tests (if any)
+        run: pnpm test --if-present
+        continue-on-error: false
+
       - name: Upload web build artifact
         uses: actions/upload-artifact@v4
         with:
           name: web-dist
-          path: apps/web/dist
+          path: frontend/web/dist
           retention-days: 7
 
-  # ── 5. Build Summary ───────────────────────────────────────────────────────
+  # ── 5. CI Success Gate ─────────────────────────────────────────────────────
   ci-success:
     name: ✅ CI passed
     needs: [lint, typecheck, build]

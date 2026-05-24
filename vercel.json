@@ -1,7 +1,7 @@
 {
   "framework": "vite",
   "buildCommand": "pnpm --filter @hireflow/web build",
-  "outputDirectory": "apps/web/dist",
+  "outputDirectory": "frontend/web/dist",
   "installCommand": "pnpm install --frozen-lockfile",
   "devCommand": "pnpm --filter @hireflow/web dev",
   "rewrites": [

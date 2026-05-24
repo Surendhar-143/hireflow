@@ -1,0 +1,149 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Rollback Workflow — manual trigger to revert a failed production deployment
+# Supports: Vercel frontend rollback + Railway backend redeploy from prior SHA
+# Usage: GitHub Actions → "Rollback Production" → Run workflow → Enter SHA
+# ─────────────────────────────────────────────────────────────────────────────
+name: Rollback Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Git SHA to roll back to (leave empty for previous commit on main)'
+        required: false
+        type: string
+      rollback_frontend:
+        description: 'Roll back frontend (Vercel)?'
+        type: boolean
+        default: true
+      rollback_backend:
+        description: 'Roll back backend (Railway)?'
+        type: boolean
+        default: true
+      reason:
+        description: 'Reason for rollback (for audit trail)'
+        required: true
+        type: string
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false  # Never cancel in-flight rollbacks
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '11'
+
+jobs:
+  # ── Log rollback intent ────────────────────────────────────────────────────
+  audit:
+    name: 📋 Audit rollback intent
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log rollback reason
+        run: |
+          echo "## ⚠️ Production Rollback Initiated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Initiated by** | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Target SHA** | \`${{ inputs.target_sha || 'previous commit' }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Reason** | ${{ inputs.reason }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Timestamp** | $(date -u) |" >> $GITHUB_STEP_SUMMARY
+
+  # ── Rollback Frontend (Vercel) ────────────────────────────────────────────
+  rollback-web:
+    name: 🌐 Rollback Frontend → Vercel
+    runs-on: ubuntu-latest
+    needs: audit
+    if: ${{ inputs.rollback_frontend }}
+
+    steps:
+      - name: Checkout target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha || 'HEAD~1' }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend from target SHA
+        run: pnpm --filter @hireflow/web build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL_PRODUCTION }}
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: frontend/web
+
+      - name: Deploy rollback to Vercel
+        run: |
+          DEPLOY_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | tail -n1)
+          echo "✅ Rollback deployed to: $DEPLOY_URL"
+        working-directory: frontend/web
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+  # ── Rollback Backend (Railway) ────────────────────────────────────────────
+  rollback-api:
+    name: 🚂 Rollback API → Railway
+    runs-on: ubuntu-latest
+    needs: audit
+    if: ${{ inputs.rollback_backend }}
+
+    steps:
+      - name: Checkout target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha || 'HEAD~1' }}
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy API rollback to Railway
+        run: |
+          railway up --service=express-api --detach
+        working-directory: backend/express-api
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+  # ── Verify rollback health ────────────────────────────────────────────────
+  verify:
+    name: ✅ Verify rollback health
+    runs-on: ubuntu-latest
+    needs: [rollback-web, rollback-api]
+    if: always()
+
+    steps:
+      - name: Health check after rollback
+        run: |
+          sleep 30  # Give services time to start
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.API_HEALTH_URL }}/health" || echo "000")
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ API health check passed after rollback"
+          else
+            echo "❌ API health check failed (status=$STATUS) — manual investigation required"
+            exit 1
+          fi
+        env:
+          API_HEALTH_URL: ${{ secrets.API_HEALTH_URL || 'http://localhost:8000' }}
+
+      - name: Rollback summary
+        run: |
+          echo "## Rollback Complete" >> $GITHUB_STEP_SUMMARY
+          echo "Frontend: ${{ needs.rollback-web.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "Backend: ${{ needs.rollback-api.result }}" >> $GITHUB_STEP_SUMMARY

@@ -1,5 +1,6 @@
 packages:
-  - 'apps/*'
+  - 'frontend/*'
+  - 'backend/*'
   - 'packages/*'
 
 onlyBuiltDependencies:
@@ -13,3 +14,9 @@ minimumReleaseAgeExclude:
   - '@tanstack/query-devtools'
   - '@tanstack/react-query-devtools'
   - '@tanstack/react-query'
+
+allowBuilds:
+  '@prisma/client': true
+  '@prisma/engines': true
+  esbuild: true
+  prisma: true

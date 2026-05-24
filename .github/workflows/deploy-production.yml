@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Deploy Production — runs after CI passes on push to main
-# Deploys frontend to Vercel Production
-# Deploys Express API to Railway
+# Order: backend first → frontend (prevents frontend pointing to old API)
+# Post-deploy: health check validates both services are live
 # ─────────────────────────────────────────────────────────────────────────────
 name: Deploy Production
 
@@ -28,11 +28,52 @@ env:
   PNPM_VERSION: '11'
 
 jobs:
-  # ── Frontend → Vercel Production ───────────────────────────────────────────
+  # ── Step 1: Backend → Railway (deploy first) ───────────────────────────────
+  deploy-api:
+    name: 🚂 Deploy API → Railway
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.skip_backend }}
+    environment:
+      name: production-api
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy Express API to Railway
+        run: |
+          railway up --service=express-api --detach
+        working-directory: backend/express-api
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      # Wait for API to be healthy before deploying frontend
+      - name: Wait for API health check
+        run: |
+          echo "Waiting for API to come online..."
+          for i in $(seq 1 12); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.API_HEALTH_URL }}/health" || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ API is healthy (attempt $i)"
+              exit 0
+            fi
+            echo "⏳ API not ready yet (attempt $i, status=$STATUS) — waiting 10s..."
+            sleep 10
+          done
+          echo "❌ API health check timed out after 2 minutes"
+          exit 1
+        env:
+          API_HEALTH_URL: ${{ secrets.API_HEALTH_URL || 'http://localhost:8000' }}
+
+  # ── Step 2: Frontend → Vercel (after backend is healthy) ──────────────────
   deploy-web:
     name: 🌐 Deploy Web → Vercel
     runs-on: ubuntu-latest
-    if: ${{ !inputs.skip_frontend }}
+    needs: deploy-api  # Frontend deploys AFTER backend is confirmed healthy
+    if: ${{ !inputs.skip_frontend && (success() || inputs.skip_backend) }}
     environment:
       name: production
       url: ${{ steps.get-url.outputs.url }}
@@ -67,7 +108,7 @@ jobs:
 
       - name: Pull Vercel environment
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: apps/web
+        working-directory: frontend/web
 
       - name: Deploy to Vercel (Production)
         id: get-url
@@ -75,37 +116,15 @@ jobs:
           DEPLOY_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | tail -n1)
           echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
           echo "✅ Deployed to: $DEPLOY_URL"
-        working-directory: apps/web
+        working-directory: frontend/web
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-  # ── Backend → Railway ──────────────────────────────────────────────────────
-  deploy-api:
-    name: 🚂 Deploy API → Railway
-    runs-on: ubuntu-latest
-    if: ${{ !inputs.skip_backend }}
-    environment:
-      name: production-api
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Deploy Express API to Railway
-        run: |
-          railway up --service=express-api --detach
-        working-directory: apps/express-api
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
   # ── Post-deploy Summary ────────────────────────────────────────────────────
   notify:
     name: 📣 Deployment Summary
-    needs: [deploy-web, deploy-api]
+    needs: [deploy-api, deploy-web]
     runs-on: ubuntu-latest
     if: always()
 
@@ -116,8 +135,15 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Service | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-          echo "| Web (Vercel) | ${{ needs.deploy-web.result == 'success' && '✅ Deployed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| API (Railway) | ${{ needs.deploy-api.result == 'success' && '✅ Deployed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Web (Vercel) | ${{ needs.deploy-web.result == 'success' && '✅ Deployed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "**Triggered by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Deploy URL:** ${{ needs.deploy-web.outputs.deploy-url }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "⚠️ Production deployment encountered failures. Check the steps above."
+          echo "Consider using the rollback workflow if needed: .github/workflows/rollback.yml"

@@ -196,6 +196,8 @@ export interface UserDTO extends Timestamps {
   avatar?: string
   role: UserRole
   onboardingCompleted: boolean
+  candidateProfile?: CandidateProfileDTO
+  recruiterProfile?: RecruiterProfileDTO
 }
 
 export type User = UserDTO
