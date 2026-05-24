@@ -4,7 +4,7 @@ services:
     runtime: node
     repo: https://github.com/Surendhar-143/hireflow
     branch: main
-    buildCommand: pnpm install && pnpm run build --filter=@hireflow/express-api
+    buildCommand: pnpm install && pnpm --filter @hireflow/schemas build && pnpm --filter @hireflow/express-api build
     startCommand: pnpm --filter @hireflow/express-api start
     envVars:
       - key: NODE_ENV
