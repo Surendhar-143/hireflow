@@ -14,30 +14,30 @@
     --topbar-height: 56px;
     --radius: 0.75rem;
 
-    /* ── Midnight Cobalt Pitch Theme (Dark by Default) ── */
-    --background: 222 47% 4.5%;
-    --foreground: 210 40% 98%;
+    /* ── Emerald Obsidian Theme (Dark by Default) ── */
+    --background: 140 20% 4%;
+    --foreground: 140 15% 98%;
 
-    --surface-base: 222 47% 4.5%;
-    --surface-elevated: 222 47% 7.5%;
-    --surface-overlay: 222 47% 10%;
+    --surface-base: 140 20% 4%;
+    --surface-elevated: 140 12% 8%;
+    --surface-overlay: 140 12% 11%;
 
-    --card: 222 47% 7.5%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 7.5%;
-    --popover-foreground: 210 40% 98%;
+    --card: 140 12% 8%;
+    --card-foreground: 140 15% 98%;
+    --popover: 140 12% 8%;
+    --popover-foreground: 140 15% 98%;
 
-    --primary: 224 100% 60%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 150 84% 38%;
+    --primary-foreground: 140 20% 4%;
 
-    --secondary: 222 20% 12%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 140 10% 12%;
+    --secondary-foreground: 140 15% 98%;
 
-    --muted: 222 20% 12%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 140 10% 12%;
+    --muted-foreground: 140 8% 64%;
 
-    --accent: 174 90% 41%;
-    --accent-foreground: 222 47% 4.5%;
+    --accent: 150 84% 45%;
+    --accent-foreground: 140 20% 4%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -51,36 +51,36 @@
     --info: 217 91% 60%;
     --info-foreground: 0 0% 100%;
 
-    --border: 222 20% 14%;
-    --input: 222 20% 14%;
-    --ring: 224 100% 60%;
+    --border: 140 10% 14%;
+    --input: 140 10% 14%;
+    --ring: 150 84% 38%;
   }
 
   .dark {
     /* Identical HSL values so Dark Theme is enforced automatically */
-    --background: 222 47% 4.5%;
-    --foreground: 210 40% 98%;
+    --background: 140 20% 4%;
+    --foreground: 140 15% 98%;
 
-    --surface-base: 222 47% 4.5%;
-    --surface-elevated: 222 47% 7.5%;
-    --surface-overlay: 222 47% 10%;
+    --surface-base: 140 20% 4%;
+    --surface-elevated: 140 12% 8%;
+    --surface-overlay: 140 12% 11%;
 
-    --card: 222 47% 7.5%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 7.5%;
-    --popover-foreground: 210 40% 98%;
+    --card: 140 12% 8%;
+    --card-foreground: 140 15% 98%;
+    --popover: 140 12% 8%;
+    --popover-foreground: 140 15% 98%;
 
-    --primary: 224 100% 60%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 150 84% 38%;
+    --primary-foreground: 140 20% 4%;
 
-    --secondary: 222 20% 12%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 140 10% 12%;
+    --secondary-foreground: 140 15% 98%;
 
-    --muted: 222 20% 12%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 140 10% 12%;
+    --muted-foreground: 140 8% 64%;
 
-    --accent: 174 90% 41%;
-    --accent-foreground: 222 47% 4.5%;
+    --accent: 150 84% 45%;
+    --accent-foreground: 140 20% 4%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -94,9 +94,9 @@
     --info: 217 91% 60%;
     --info-foreground: 0 0% 100%;
 
-    --border: 222 20% 14%;
-    --input: 222 20% 14%;
-    --ring: 224 100% 60%;
+    --border: 140 10% 14%;
+    --input: 140 10% 14%;
+    --ring: 150 84% 38%;
   }
 }
 
@@ -162,11 +162,11 @@
 
   /* Gradient text */
   .gradient-text {
-    @apply bg-gradient-to-r from-brand-400 via-brand-300 to-purple-300 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-brand-400 via-emerald-300 to-teal-400 bg-clip-text text-transparent;
   }
 
   .gradient-text-warm {
-    @apply bg-gradient-to-r from-violet-400 via-fuchsia-300 to-pink-300 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-emerald-400 via-brand-300 to-emerald-200 bg-clip-text text-transparent;
   }
 
   /* Surface glow */
