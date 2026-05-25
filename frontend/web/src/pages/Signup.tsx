@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Sparkles, Mail, Lock, User, CheckCircle2, RefreshCw, AlertCircle, Briefcase, GraduationCap } from 'lucide-react'
+import logo from '@/assets/logo.png'
+import logoText from '@/assets/logo_text.png'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/components/auth/AuthContext'
 import { useSEO } from '@/hooks/useSEO'
@@ -62,11 +64,9 @@ export default function Signup() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-2 mb-8">
-        <Link to="/" className="inline-flex items-center gap-2">
-          <div className="size-9 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
-            <Sparkles className="size-5 animate-pulse" />
-          </div>
-          <span className="font-black text-xl text-foreground tracking-tight">HireFlow</span>
+        <Link to="/" className="inline-flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+          <img src={logo} className="size-9 object-contain shrink-0 drop-shadow-glow" alt="HireFlow logo" />
+          <img src={logoText} className="h-5 object-contain shrink-0" alt="HireFlow text" />
         </Link>
         <h1 className="text-2xl font-black tracking-tight text-foreground mt-4">
           Create your account

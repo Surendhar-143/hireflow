@@ -33,10 +33,10 @@ export default function Landing() {
 
       {/* Nav */}
       <header className="relative z-10 flex items-center justify-between px-6 md:px-12 h-16 border-b border-border/50 backdrop-blur-md bg-background/70">
-        <div className="flex items-center gap-2.5">
+        <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
           <img src={logo} className="size-8 object-contain shrink-0" alt="HireFlow logo" />
           <img src={logoText} className="h-5 object-contain shrink-0" alt="HireFlow text logo" />
-        </div>
+        </Link>
         <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
           <Link to="/jobs" className="hover:text-foreground transition-colors">Browse Jobs</Link>
           <Link to="/companies" className="hover:text-foreground transition-colors">Companies</Link>
