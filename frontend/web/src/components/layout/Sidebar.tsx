@@ -2,6 +2,7 @@ import React, { useMemo } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import logo from '@/assets/logo.png'
+import logoText from '@/assets/logo_text.png'
 import {
   Briefcase, LayoutDashboard, Building2, Bookmark, FileText,
   Settings, ChevronLeft, ChevronRight, Sparkles, Bell, Users,
@@ -139,16 +140,15 @@ export function Sidebar({ role: initialRole = 'candidate' }: { role?: 'candidate
           <img src={logo} className="size-8 object-contain shrink-0 drop-shadow-glow" alt="HireFlow logo" />
           <AnimatePresence>
             {!sidebarCollapsed && (
-              <motion.span
+              <motion.img
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="font-bold text-base tracking-tight text-foreground whitespace-nowrap"
-              >
-                HireFlow
-                <span className="text-brand-400">.</span>
-              </motion.span>
+                src={logoText}
+                className="h-4 object-contain shrink-0 whitespace-nowrap"
+                alt="HireFlow text"
+              />
             )}
           </AnimatePresence>
         </Link>
