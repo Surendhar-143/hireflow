@@ -6,10 +6,18 @@ const DEFAULT_TIMEOUT_MS = (import.meta as any).env?.DEV ? 15_000 : 60_000
 function getAuthHeader(): string {
   const token = typeof localStorage !== 'undefined' ? localStorage.getItem('hf_token') : null
   if (token) return `Bearer ${token}`
+  return ''
+}
 
-  const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('hf_role') : null
-  if (stored === 'recruiter') return 'Bearer mock-recruiter-token'
-  return 'Bearer mock-candidate-token'
+function getHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+  const auth = getAuthHeader()
+  if (auth) {
+    headers['Authorization'] = auth
+  }
+  return headers
 }
 
 export class ApiError extends Error {
@@ -40,10 +48,7 @@ export async function httpGet<T>(path: string, params?: Record<string, string | 
 
   try {
     const res = await fetch(url.toString(), {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: getAuthHeader(),
-      },
+      headers: getHeaders(),
       signal: controller.signal,
     })
 
@@ -73,10 +78,7 @@ export async function httpPost<T>(path: string, body: unknown): Promise<T> {
   try {
     const res = await fetch(`${API_BASE}${path}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: getAuthHeader(),
-      },
+      headers: getHeaders(),
       body: JSON.stringify(body),
       signal: controller.signal,
     })
@@ -108,10 +110,7 @@ export async function httpPut<T>(path: string, body: unknown): Promise<T> {
   try {
     const res = await fetch(`${API_BASE}${path}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: getAuthHeader(),
-      },
+      headers: getHeaders(),
       body: JSON.stringify(body),
       signal: controller.signal,
     })
@@ -143,10 +142,7 @@ export async function httpPatch<T>(path: string, body: unknown): Promise<T> {
   try {
     const res = await fetch(`${API_BASE}${path}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: getAuthHeader(),
-      },
+      headers: getHeaders(),
       body: JSON.stringify(body),
       signal: controller.signal,
     })
@@ -172,10 +168,7 @@ export async function httpPatch<T>(path: string, body: unknown): Promise<T> {
 export async function httpDelete<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: getAuthHeader(),
-    },
+    headers: getHeaders(),
   })
 
   if (!res.ok) {
