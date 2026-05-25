@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { Search, Bell, Sun, Moon, Command, Sparkles, Menu, Check } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Search, Bell, Sun, Moon, Command, Sparkles, Menu, Check, LogOut, User, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Avatar } from '@/components/ui/avatar'
@@ -17,7 +17,8 @@ export function TopNav() {
     sidebarCollapsed,
     toggleMobileSidebar,
   } = useUIStore()
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
 
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [notifications, setNotifications] = useState([
@@ -43,6 +44,15 @@ export function TopNav() {
     }
   }, [notificationsOpen])
 
+  const handleLogout = async () => {
+    try {
+      await logout()
+      navigate('/')
+    } catch (err) {
+      console.error('Logout failed:', err)
+    }
+  }
+
   const unreadCount = notifications.filter(n => n.unread).length
 
   const markAllAsRead = () => {
@@ -64,7 +74,7 @@ export function TopNav() {
   return (
     <header
       className={cn(
-        'fixed top-0 right-0 z-20 h-14 flex items-center gap-3 px-4 border-b border-border',
+        'fixed top-0 right-0 z-40 h-14 flex items-center gap-3 px-4 border-b border-border',
         'bg-background/80 backdrop-blur-md transition-all duration-slow left-0',
         sidebarCollapsed
           ? 'md:left-[var(--sidebar-collapsed-width)]'
@@ -209,11 +219,21 @@ export function TopNav() {
         {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
       </Button>
 
-      {/* User */}
-      <button className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-accent transition-colors" aria-label="User menu">
-        <Avatar src={user?.avatar || undefined} name={fullName} size="sm" />
-        <span className="hidden lg:block text-sm font-medium text-foreground">{displayName}</span>
-      </button>
+      {/* User Profile and Logout */}
+      <div className="flex items-center gap-2 bg-accent/40 rounded-full py-1 px-2 border border-border/50">
+        <div className="flex items-center gap-2" title={fullName}>
+          <Avatar src={user?.avatar || undefined} name={fullName} size="sm" />
+        </div>
+        <div className="w-px h-4 bg-border/80 mx-0.5" />
+        <button
+          onClick={handleLogout}
+          className="text-muted-foreground hover:text-destructive transition-colors flex items-center justify-center p-1"
+          title="Sign Out"
+          aria-label="Sign Out"
+        >
+          <LogOut className="size-4" />
+        </button>
+      </div>
     </header>
   )
 }

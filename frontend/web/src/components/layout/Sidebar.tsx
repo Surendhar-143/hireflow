@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react'
-import { NavLink, Link } from 'react-router-dom'
+import React, { useMemo, useState, useRef, useEffect } from 'react'
+import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import logo from '@/assets/logo.png'
 import logoText from '@/assets/logo_text.png'
@@ -7,7 +7,7 @@ import { useSavedJobs } from '@/hooks/useQueries'
 import {
   Briefcase, LayoutDashboard, Building2, Bookmark, FileText,
   Settings, ChevronLeft, ChevronRight, Sparkles, Bell, Users,
-  BarChart3, PlusCircle, Shield,
+  BarChart3, PlusCircle, Shield, LogOut,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
@@ -22,7 +22,7 @@ const CANDIDATE_NAV = [
   { label: 'Dashboard', href: '/app/dashboard', icon: LayoutDashboard },
   { label: 'Browse Jobs', href: '/app/jobs', icon: Briefcase },
   { label: 'Companies', href: '/app/companies', icon: Building2 },
-  { label: 'Saved Jobs', href: '/app/saved', icon: Bookmark, badge: '4' },
+  { label: 'Saved Jobs', href: '/app/saved', icon: Bookmark },
   { label: 'Applications', href: '/app/applications', icon: FileText },
   { label: 'AI Matches', href: '/app/ai-matches', icon: Sparkles, badge: 'New' },
 ]
@@ -105,9 +105,38 @@ const NavItem = React.memo(function NavItem({ href, icon: Icon, label, badge, co
 })
 
 export function Sidebar({ role: initialRole = 'candidate' }: { role?: 'candidate' | 'recruiter' }) {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const { canAccessAdmin } = usePermissions()
   const { sidebarCollapsed, toggleSidebar, mobileSidebarOpen, setMobileSidebarOpen } = useUIStore()
+
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false)
+  const profileMenuRef = useRef<HTMLDivElement>(null)
+
+  // Click outside to close profile menu
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setProfileMenuOpen(false)
+      }
+    }
+    if (profileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [profileMenuOpen])
+
+  const handleLogout = async () => {
+    setProfileMenuOpen(false)
+    try {
+      await logout()
+      navigate('/')
+    } catch (err) {
+      console.error('Logout failed:', err)
+    }
+  }
 
   const activeRole = user?.role || initialRole
 
@@ -184,23 +213,80 @@ export function Sidebar({ role: initialRole = 'candidate' }: { role?: 'candidate
       {/* Footer: User + collapse */}
       <div className="border-t border-border p-2 space-y-1 shrink-0">
         <NavItem href="/app/settings" icon={Settings} label="Settings" collapsed={sidebarCollapsed} onClick={handleItemClick} />
-        <div className={cn('flex items-center gap-2.5 px-3 py-2', sidebarCollapsed && 'justify-center')}>
-          <Avatar
-            src={user?.avatar || undefined}
-            name={user?.name || 'Guest User'}
-            size="sm"
-            className="shrink-0 ring-1 ring-border"
-          />
+        
+        {/* Profile with dropdown */}
+        <div className="relative" ref={profileMenuRef}>
+          <button
+            onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+            className={cn(
+              'flex items-center gap-2.5 px-3 py-2 w-full rounded-lg transition-colors cursor-pointer',
+              profileMenuOpen ? 'bg-accent' : 'hover:bg-accent/50',
+              sidebarCollapsed && 'justify-center'
+            )}
+            aria-label="Profile menu"
+          >
+            <Avatar
+              src={user?.avatar || undefined}
+              name={user?.name || 'Guest User'}
+              size="sm"
+              className="shrink-0 ring-1 ring-border"
+            />
+            <AnimatePresence>
+              {!sidebarCollapsed && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex-1 min-w-0 text-left"
+                >
+                  <p className="text-xs font-medium text-foreground truncate">{user?.name || 'Guest User'}</p>
+                  <p className="text-[10px] text-muted-foreground truncate capitalize">{activeRole}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </button>
+
+          {/* Profile Dropdown */}
           <AnimatePresence>
-            {!sidebarCollapsed && (
+            {profileMenuOpen && (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex-1 min-w-0"
+                initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 6, scale: 0.95 }}
+                transition={{ duration: 0.15, ease: 'easeOut' }}
+                className={cn(
+                  'absolute z-50 rounded-2xl border border-border bg-card shadow-2xl overflow-hidden',
+                  sidebarCollapsed
+                    ? 'left-full ml-2 bottom-0 w-56'
+                    : 'bottom-full mb-2 left-0 right-0 w-auto'
+                )}
               >
-                <p className="text-xs font-medium text-foreground truncate">{user?.name || 'Guest User'}</p>
-                <p className="text-[10px] text-muted-foreground truncate capitalize">{activeRole}</p>
+                {/* User info header */}
+                <div className="p-3 border-b border-border/80">
+                  <div className="flex items-center gap-2.5">
+                    <Avatar src={user?.avatar || undefined} name={user?.name || 'Guest User'} size="md" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground truncate">{user?.name || 'Guest User'}</p>
+                      <p className="text-[11px] text-muted-foreground truncate">{user?.email || 'No email'}</p>
+                    </div>
+                  </div>
+                  {user?.role && (
+                    <span className="inline-block mt-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20">
+                      {user.role}
+                    </span>
+                  )}
+                </div>
+
+                {/* Logout */}
+                <div className="p-1.5">
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-destructive hover:bg-destructive/10 transition-colors w-full text-left"
+                  >
+                    <LogOut className="size-4" />
+                    Sign Out
+                  </button>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
