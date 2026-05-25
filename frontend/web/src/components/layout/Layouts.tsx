@@ -55,18 +55,9 @@ export function CandidateDashboardLayout() {
       >
         <ErrorBoundary>
           <Suspense fallback={<PageSkeleton />}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={location.pathname}
-                variants={pageVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="min-h-[calc(100vh-56px)]"
-              >
-                <Outlet />
-              </motion.div>
-            </AnimatePresence>
+            <div className="min-h-[calc(100vh-56px)] animate-in fade-in duration-500">
+              <Outlet />
+            </div>
           </Suspense>
         </ErrorBoundary>
       </main>
@@ -102,18 +93,9 @@ export function RecruiterDashboardLayout() {
       >
         <ErrorBoundary>
           <Suspense fallback={<PageSkeleton />}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={location.pathname}
-                variants={pageVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="min-h-[calc(100vh-56px)]"
-              >
-                <Outlet />
-              </motion.div>
-            </AnimatePresence>
+            <div className="min-h-[calc(100vh-56px)] animate-in fade-in duration-500">
+              <Outlet />
+            </div>
           </Suspense>
         </ErrorBoundary>
       </main>

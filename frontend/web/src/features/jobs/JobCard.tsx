@@ -6,6 +6,7 @@ import { cn, formatRelativeTime, formatSalary } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useSearchStore } from '@/store/search-store'
+import { useSaveJobMutation } from '@/hooks/useQueries'
 import type { Job } from '@hireflow/types'
 
 // ─── Match Score Ring ─────────────────────────────────────────────────────────
@@ -56,6 +57,19 @@ interface JobCardProps {
 export const JobCard = React.memo(function JobCard({ job, layout = 'list', index = 0 }: JobCardProps) {
   const toggleSaveJob = useSearchStore((state) => state.toggleSaveJob)
   const saved = useSearchStore((state) => state.savedJobs.includes(job.id))
+  
+  const { save, unsave } = useSaveJobMutation()
+
+  const handleToggleSave = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    toggleSaveJob(job.id) // Optimistic UI update
+    if (saved) {
+      unsave.mutate(job.id)
+    } else {
+      save.mutate(job.id)
+    }
+  }
 
   return (
     <motion.article
@@ -109,7 +123,7 @@ export const JobCard = React.memo(function JobCard({ job, layout = 'list', index
         <div className="flex items-center gap-2 shrink-0">
           {job.aiMatchScore && <MatchScoreRing score={job.aiMatchScore} />}
           <button
-            onClick={() => toggleSaveJob(job.id)}
+            onClick={handleToggleSave}
             className={cn(
               'flex items-center justify-center size-8 rounded-lg border transition-all duration-fast',
               saved
