@@ -4,10 +4,11 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Sidebar } from './Sidebar'
 import { TopNav } from './TopNav'
-import { CommandMenu } from './CommandMenu'
-import { AICopilot } from '@/features/ai/AICopilot'
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
 import { SkeletonCard } from '@/components/ui/skeleton'
+
+const CommandMenu = React.lazy(() => import('./CommandMenu'))
+const AICopilot = React.lazy(() => import('@/features/ai/AICopilot'))
 import { useUIStore } from '@/store/ui-store'
 import { pageVariants } from '@/lib/motion'
 import { MarketingNavbar } from './MarketingNavbar'
@@ -30,12 +31,13 @@ function PageSkeleton() {
 // ─── Candidate Dashboard Layout ──────────────────────────────────────────────
 export function CandidateDashboardLayout() {
   const { sidebarCollapsed, mobileSidebarOpen, setMobileSidebarOpen } = useUIStore()
-  const location = useLocation()
 
   return (
     <div className="min-h-screen bg-background">
-      <CommandMenu />
-      <AICopilot />
+      <Suspense fallback={null}>
+        <CommandMenu />
+        <AICopilot />
+      </Suspense>
       <Sidebar role="candidate" />
       {/* Mobile Sidebar Backdrop Overlay */}
       {mobileSidebarOpen && (
@@ -68,12 +70,13 @@ export function CandidateDashboardLayout() {
 // ─── Recruiter Dashboard Layout ──────────────────────────────────────────────
 export function RecruiterDashboardLayout() {
   const { sidebarCollapsed, mobileSidebarOpen, setMobileSidebarOpen } = useUIStore()
-  const location = useLocation()
 
   return (
     <div className="min-h-screen bg-background">
-      <CommandMenu />
-      <AICopilot />
+      <Suspense fallback={null}>
+        <CommandMenu />
+        <AICopilot />
+      </Suspense>
       <Sidebar role="recruiter" />
       {/* Mobile Sidebar Backdrop Overlay */}
       {mobileSidebarOpen && (
@@ -117,8 +120,10 @@ export function MarketingLayout() {
   const location = useLocation()
   return (
     <ErrorBoundary>
-      <CommandMenu />
-      <AICopilot />
+      <Suspense fallback={null}>
+        <CommandMenu />
+        <AICopilot />
+      </Suspense>
       
       {/* Premium Reusable Marketing Navbar */}
       <MarketingNavbar />

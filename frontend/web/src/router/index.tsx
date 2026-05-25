@@ -109,11 +109,12 @@ export const router = createBrowserRouter([
       {
         path: '/companies',
         loader: async () => {
-          return queryClient.ensureQueryData({
+          queryClient.prefetchQuery({
             queryKey: queryKeys.companies.list(undefined, 1),
             queryFn: () => companiesApi.list({ page: 1, limit: 20 }),
             staleTime: 300_000,
           })
+          return null
         },
         element: (
           <RouteShell fallback={<CompanyListSkeleton />}>
@@ -125,11 +126,12 @@ export const router = createBrowserRouter([
         path: '/companies/:slug',
         loader: async ({ params }) => {
           if (!params.slug) return null
-          return queryClient.ensureQueryData({
+          queryClient.prefetchQuery({
             queryKey: queryKeys.companies.detail(params.slug),
             queryFn: () => companiesApi.get(params.slug!),
             staleTime: 300_000,
           })
+          return null
         },
         element: (
           <RouteShell fallback={<CompanyDetailSkeleton />}>
@@ -140,11 +142,12 @@ export const router = createBrowserRouter([
       {
         path: '/jobs',
         loader: async () => {
-          return queryClient.ensureQueryData({
+          queryClient.prefetchQuery({
             queryKey: queryKeys.jobs.list({}),
             queryFn: () => jobsApi.list({}, undefined, 20),
             staleTime: 60_000,
           })
+          return null
         },
         element: (
           <RouteShell fallback={<JobFeedSkeleton count={9} />}>
@@ -156,11 +159,12 @@ export const router = createBrowserRouter([
         path: '/jobs/:id',
         loader: async ({ params }) => {
           if (!params.id) return null
-          return queryClient.ensureQueryData({
+          queryClient.prefetchQuery({
             queryKey: queryKeys.jobs.detail(params.id),
             queryFn: () => jobsApi.get(params.id!),
             staleTime: 120_000,
           })
+          return null
         },
         element: (
           <RouteShell fallback={<JobDetailSkeleton />}>
@@ -195,11 +199,12 @@ export const router = createBrowserRouter([
       {
         path: 'jobs',
         loader: async () => {
-          return queryClient.ensureQueryData({
+          queryClient.prefetchQuery({
             queryKey: queryKeys.jobs.list({}),
             queryFn: () => jobsApi.list({}, undefined, 20),
             staleTime: 60_000,
           })
+          return null
         },
         element: (
           <RouteShell fallback={<JobFeedSkeleton count={9} />}>
@@ -211,11 +216,12 @@ export const router = createBrowserRouter([
         path: 'jobs/:id',
         loader: async ({ params }) => {
           if (!params.id) return null
-          return queryClient.ensureQueryData({
+          queryClient.prefetchQuery({
             queryKey: queryKeys.jobs.detail(params.id),
             queryFn: () => jobsApi.get(params.id!),
             staleTime: 120_000,
           })
+          return null
         },
         element: (
           <RouteShell fallback={<JobDetailSkeleton />}>
@@ -226,11 +232,12 @@ export const router = createBrowserRouter([
       {
         path: 'companies',
         loader: async () => {
-          return queryClient.ensureQueryData({
+          queryClient.prefetchQuery({
             queryKey: queryKeys.companies.list(undefined, 1),
             queryFn: () => companiesApi.list({ page: 1, limit: 20 }),
             staleTime: 300_000,
           })
+          return null
         },
         element: (
           <RouteShell fallback={<CompanyListSkeleton />}>
@@ -242,11 +249,12 @@ export const router = createBrowserRouter([
         path: 'companies/:slug',
         loader: async ({ params }) => {
           if (!params.slug) return null
-          return queryClient.ensureQueryData({
+          queryClient.prefetchQuery({
             queryKey: queryKeys.companies.detail(params.slug),
             queryFn: () => companiesApi.get(params.slug!),
             staleTime: 300_000,
           })
+          return null
         },
         element: (
           <RouteShell fallback={<CompanyDetailSkeleton />}>

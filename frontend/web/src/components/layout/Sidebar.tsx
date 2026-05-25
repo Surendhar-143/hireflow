@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react'
+import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react'
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import logo from '@/assets/logo.png'
@@ -165,9 +165,9 @@ export function Sidebar({ role: initialRole = 'candidate' }: { role?: 'candidate
     return base
   }, [activeRole, canAccessAdmin, savedJobRelations])
 
-  const handleItemClick = () => {
+  const handleItemClick = useCallback(() => {
     setMobileSidebarOpen(false)
-  }
+  }, [setMobileSidebarOpen])
 
   return (
     <motion.aside

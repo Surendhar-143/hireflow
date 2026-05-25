@@ -101,7 +101,7 @@ export default function CompanyDetail() {
             <div className="flex items-end justify-between -mt-8 mb-4">
               <div className="size-16 rounded-2xl border-4 border-card bg-muted overflow-hidden shadow-lg">
                 {company.logo ? (
-                  <img src={company.logo} alt={company.name} className="size-full object-cover" />
+                  <img src={company.logo} alt={company.name} loading="lazy" className="size-full object-cover" />
                 ) : (
                   <div className="size-full flex items-center justify-center text-lg font-bold text-muted-foreground">
                     {company.name[0]}

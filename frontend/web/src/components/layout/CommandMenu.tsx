@@ -242,3 +242,6 @@ export function CommandMenu() {
     </AnimatePresence>
   )
 }
+
+export default CommandMenu
+
