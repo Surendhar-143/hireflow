@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { authApi } from '@/api/auth.api'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
+import { queryClient } from '@/lib/react-query'
 import type { UserDTO } from '@hireflow/types'
-import { toast } from 'sonner'
 
 interface AuthContextType {
   user: UserDTO | null
@@ -18,91 +18,86 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+// Singleton lock outside React lifecycle to prevent StrictMode duplicate firing
+let initialHydrationLock: Promise<any> | null = null
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<any | null>(null)
   const [supabaseUser, setSupabaseUser] = useState<any | null>(null)
-  const [user, setUser] = useState<UserDTO | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const queryClient = useQueryClient()
-  
-  const lastTokenRef = useRef<string | null>(null)
-  const activeHydrationRef = useRef<Promise<void> | null>(null)
-
-  // Hydrate user profile from backend database (with request deduplication)
-  const hydrateProfile = async (token: string) => {
-    // If we already have a user and the token hasn't changed, skip duplicate request
-    if (lastTokenRef.current === token && user) {
-      return
-    }
-    // If there is an active hydration for this exact token in progress, return that promise to deduplicate
-    if (lastTokenRef.current === token && activeHydrationRef.current) {
-      return activeHydrationRef.current
-    }
-
-    lastTokenRef.current = token
-
-    const hydrationPromise = (async () => {
-      try {
-        localStorage.setItem('hf_token', token)
-        const profile = await authApi.getMe()
-        setUser(profile)
-        if (profile.role) {
-          localStorage.setItem('hf_role', profile.role)
-        }
-      } catch (err: any) {
-        if (err instanceof TypeError && err.message === 'Failed to fetch') {
-          console.warn('Network error: Could not reach the authentication server. Please check CORS settings and server status.')
-        } else {
-          console.error('Failed to hydrate local profile database:', err)
-        }
-        setUser(null)
-        lastTokenRef.current = null
-      } finally {
-        activeHydrationRef.current = null
-      }
-    })()
-
-    activeHydrationRef.current = hydrationPromise
-    return hydrationPromise
-  }
+  const [isSessionLoading, setIsSessionLoading] = useState(true)
 
   useEffect(() => {
-    // 1. Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setSupabaseUser(session?.user ?? null)
-      if (session?.access_token) {
-        hydrateProfile(session.access_token).then(() => setIsLoading(false))
-      } else {
-        setIsLoading(false)
+    let mounted = true
+
+    // 1. Singleton Session Fetch
+    if (!initialHydrationLock) {
+      initialHydrationLock = supabase.auth.getSession()
+    }
+
+    initialHydrationLock.then(({ data: { session: initialSession } }) => {
+      if (mounted) {
+        setSession(initialSession)
+        setSupabaseUser(initialSession?.user ?? null)
+        setIsSessionLoading(false)
       }
     })
 
-    // 2. Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+    // 2. Stable Subscription
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
+      if (!mounted) return
+      
       setSession(currentSession)
       setSupabaseUser(currentSession?.user ?? null)
 
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        if (currentSession?.access_token) {
-          setIsLoading(true)
-          await hydrateProfile(currentSession.access_token)
-          // Invalidate queries so that dashboard/jobs reload with proper role context
-          queryClient.invalidateQueries()
-          setIsLoading(false)
-        }
-      } else if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT') {
         localStorage.removeItem('hf_token')
         localStorage.removeItem('hf_role')
-        setUser(null)
-        queryClient.clear()
+        queryClient.clear() // Clear cache entirely on logout
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        if (currentSession?.access_token) {
+          localStorage.setItem('hf_token', currentSession.access_token)
+          // Do NOT invalidate everything; only invalidate the user profile
+          queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
+        }
       }
     })
 
     return () => {
+      mounted = false
       subscription.unsubscribe()
+      // We don't nullify initialHydrationLock so HMR/StrictMode doesn't refetch the session redundantly
     }
-  }, [queryClient])
+  }, [])
+
+  // 3. Delegate profile fetching to React Query (Built-in deduplication & caching)
+  const { data: user = null, isLoading: isProfileLoading } = useQuery({
+    queryKey: ['auth', 'me'],
+    queryFn: async () => {
+      if (!session?.access_token) return null
+      
+      // Ensure token is in localStorage for http client
+      localStorage.setItem('hf_token', session.access_token)
+      
+      try {
+        const profile = await authApi.getMe()
+        if (profile?.role) {
+          localStorage.setItem('hf_role', profile.role)
+        }
+        return profile
+      } catch (err: any) {
+        if (err instanceof TypeError && err.message === 'Failed to fetch') {
+          console.warn('Network error: Could not reach the authentication server.')
+        } else {
+          console.error('Failed to hydrate local profile database:', err)
+        }
+        return null
+      }
+    },
+    enabled: !!session?.access_token,
+    staleTime: 1000 * 60 * 30, // 30 minutes
+    gcTime: 1000 * 60 * 60 * 24, // 24 hours
+    retry: 1,
+  })
 
   const loginWithEmail = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
@@ -123,15 +118,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     if (error) throw error
 
-    // Perform an immediate onboarding seeding if signup succeeds
     if (data?.session?.access_token) {
       localStorage.setItem('hf_token', data.session.access_token)
       localStorage.setItem('hf_role', role)
       try {
-        await authApi.onboard({
-          role,
-          name,
-        })
+        await authApi.onboard({ role, name })
       } catch (err) {
         console.error('Failed auto-onboarding seed step on signup:', err)
       }
@@ -146,9 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const sendMagicLink = async (email: string) => {
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/app/onboard`,
-      },
+      options: { emailRedirectTo: `${window.location.origin}/app/onboard` },
     })
     if (error) throw error
   }
@@ -159,7 +148,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         supabaseUser,
         session,
-        isLoading,
+        isLoading: isSessionLoading || (!!session && isProfileLoading),
         loginWithEmail,
         signUpWithEmail,
         logout,

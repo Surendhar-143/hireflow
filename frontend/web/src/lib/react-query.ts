@@ -14,9 +14,15 @@ export const queryClient = new QueryClient({
   }),
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
-      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 15, // 15 minutes (Aggressive caching)
+      gcTime: 1000 * 60 * 60 * 2, // 2 hours
+      retry: (failureCount, error: any) => {
+        if (error?.status === 401 || error?.status === 404) return false
+        return failureCount < 2
+      },
+      refetchOnWindowFocus: false, // Prevent request storms on alt-tab
+      refetchOnReconnect: true,
+      refetchOnMount: false, // Serve from cache instantly
     },
   },
 })

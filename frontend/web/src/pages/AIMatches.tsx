@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { JobCard } from '@/features/jobs/JobCard'
 import { SkeletonJobCard } from '@/components/ui/skeleton'
 import { FadeIn } from '@/components/motion'
-import { useCandidateDashboard, useMe } from '@/hooks/useQueries'
+import { useCandidateDashboard, useMe, useAIMatchRecommendations } from '@/hooks/useQueries'
 import { AIMatchExplanation } from '@/components/feedback/AIMatchExplanation'
 import { AIMatchIndicator } from '@/components/feedback/AIMatchIndicator'
 import { cn } from '@/lib/utils'
@@ -14,16 +14,18 @@ import { cn } from '@/lib/utils'
 export default function AIMatches() {
   const { data: stats, isLoading: statsLoading } = useCandidateDashboard()
   const { data: me, isLoading: meLoading } = useMe()
+  const { data: aiMatchesData, isLoading: aiLoading } = useAIMatchRecommendations(me?.candidateProfile?.id, !!me?.candidateProfile?.id)
+  
   const [expandedJobId, setExpandedJobId] = useState<string | null>(null)
 
-  const topMatches = stats?.aiMatches || []
+  const topMatches = aiMatchesData || []
   const candidateSkills = me?.candidateProfile?.skills || ['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'Tailwind CSS']
 
   const toggleExpand = (jobId: string) => {
     setExpandedJobId(expandedJobId === jobId ? null : jobId)
   }
 
-  const isLoading = statsLoading || meLoading
+  const isLoading = statsLoading || meLoading || aiLoading
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">

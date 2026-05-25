@@ -39,22 +39,18 @@ export const dashboardApi = {
       throw new Error('Candidate profile not found')
     }
 
-    // 2. Fetch applications count
-    const appsRes = await httpGet<ApiResponse<any[]>>(`/applications/candidate/${candidateProfileId}`)
+    // 2. Fetch applications and saved jobs in parallel
+    const [appsRes, savedRes] = await Promise.all([
+      httpGet<ApiResponse<any[]>>(`/applications/candidate/${candidateProfileId}`),
+      httpGet<ApiResponse<any[]>>('/candidates/saved')
+    ])
+    
     const applicationsCount = (appsRes.data || []).length
-
-    // 3. Fetch saved jobs count
-    const savedRes = await httpGet<ApiResponse<any[]>>('/candidates/saved')
     const savedCount = (savedRes.data || []).length
 
-    // 4. Fetch AI matched jobs
-    let aiMatches: JobDTO[] = []
-    try {
-      const aiResMatch = await httpPost<ApiResponse<JobDTO[]>>('/ai/match', { candidateId: candidateProfileId })
-      aiMatches = aiResMatch.data ?? []
-    } catch (err) {
-      console.error('Failed to fetch AI matches:', err)
-    }
+    // 3. AI Matches are now fetched independently via useAIMatchRecommendations 
+    // to prevent blocking the dashboard hydration for 5+ seconds.
+    const aiMatches: JobDTO[] = []
 
     const profileViews = user?.candidateProfile?.profileCompletionScore || 85
 

@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
+import compression from 'compression'
 import pinoHttp from 'pino-http'
 import { config } from './config'
 import { logger } from './utils/logger'
@@ -64,6 +65,22 @@ app.use(
     contentSecurityPolicy: false, // Disables CSP headers (which are redundant for a JSON API)
   })
 )
+
+// Add compression to reduce payload sizes by 70%
+app.use(compression({
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false
+    return compression.filter(req, res)
+  }
+}))
+
+// Add aggressive Cache-Control headers for GET requests
+app.use((req, res, next) => {
+  if (req.method === 'GET' && !req.path.includes('/auth')) {
+    res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=300')
+  }
+  next()
+})
 app.use(express.json({ limit: '2mb' }))
 
 // Correlation/Trace & Timer Loggers

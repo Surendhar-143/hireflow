@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 import { SkeletonJobCard, Skeleton, SkeletonCircle } from '@/components/ui/skeleton'
 import { Stagger, StaggerItem, FadeIn } from '@/components/motion'
 import { JobCard } from '@/features/jobs/JobCard'
-import { useCandidateDashboard, useJobs, useMe, useCandidateApplications, useSavedJobs } from '@/hooks/useQueries'
+import { useCandidateDashboard, useJobs, useMe, useCandidateApplications, useSavedJobs, useAIMatchRecommendations } from '@/hooks/useQueries'
 import { cn, formatRelativeTime } from '@/lib/utils'
 import type { JobDTO, ApplicationStatus } from '@hireflow/types'
 
@@ -73,9 +73,10 @@ export default function CandidateDashboard() {
   const { data: stats, isLoading: statsLoading } = useCandidateDashboard()
   const { data: savedJobRelations = [] } = useSavedJobs()
   const { data: applications = [] } = useCandidateApplications(candidateProfileId)
+  const { data: aiMatchesData, isLoading: aiLoading } = useAIMatchRecommendations(candidateProfileId, !!candidateProfileId)
   
   const savedJobObjects = savedJobRelations.map((sr) => sr.job)
-  const aiMatches = stats?.aiMatches || []
+  const aiMatches = aiMatchesData || []
 
 
   // Dynamic Profile Completion Score calculation
@@ -127,7 +128,7 @@ export default function CandidateDashboard() {
       {/* Stats */}
       <Stagger className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StaggerItem>
-          {statsLoading ? <Skeleton className="h-[104px] rounded-2xl" /> : (
+          {statsLoading || aiLoading ? <Skeleton className="h-[104px] rounded-2xl" /> : (
             <StatCard icon={Sparkles} label="AI Matches" value={aiMatches.length} sub={`${aiMatches.slice(0, 3).length} recommended`} trend={aiMatches.length > 0 ? `+${aiMatches.length}` : undefined} color="brand" />
           )}
         </StaggerItem>
@@ -162,7 +163,7 @@ export default function CandidateDashboard() {
               </Link>
             </div>
             <div className="space-y-3">
-              {statsLoading ? (
+              {statsLoading || aiLoading ? (
                 <>
                   <SkeletonJobCard />
                   <SkeletonJobCard />
