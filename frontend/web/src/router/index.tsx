@@ -4,6 +4,7 @@ import { CandidateDashboardLayout, RecruiterDashboardLayout, MarketingLayout, Mi
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { RoleGuard } from '@/components/auth/RoleGuard'
+import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary'
 import {
   DashboardSkeleton,
   JobFeedSkeleton,
@@ -95,7 +96,7 @@ export const router = createBrowserRouter([
   // ── Marketing (no sidebar) ─────────────────────────────────────────────────
   {
     element: <MarketingLayout />,
-    errorElement: <ErrorBoundary><div /></ErrorBoundary>,
+    errorElement: <RouteErrorBoundary />,
     children: [
       {
         index: true,
@@ -180,7 +181,7 @@ export const router = createBrowserRouter([
         </RoleGuard>
       </ProtectedRoute>
     ),
-    errorElement: <ErrorBoundary><div /></ErrorBoundary>,
+    errorElement: <RouteErrorBoundary />,
     children: [
       { index: true, element: <Navigate to="/app/dashboard" replace /> },
       {
@@ -323,7 +324,7 @@ export const router = createBrowserRouter([
         </RoleGuard>
       </ProtectedRoute>
     ),
-    errorElement: <ErrorBoundary><div /></ErrorBoundary>,
+    errorElement: <RouteErrorBoundary />,
     children: [
       {
         index: true,

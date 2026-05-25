@@ -26,9 +26,10 @@ export class CandidateController {
 
   async unsaveJob(req: Request, res: Response, next: NextFunction) {
     try {
-      let { candidateId, jobId } = req.body
+      let candidateId = req.body.candidateId as string
+      const jobId = req.params.jobId as string
       if (req.user?.role === 'candidate') {
-        candidateId = req.user.candidateProfile?.id
+        candidateId = req.user.candidateProfile?.id as string
       }
 
       if (!candidateId || !jobId) {

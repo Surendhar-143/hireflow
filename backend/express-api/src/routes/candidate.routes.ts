@@ -6,7 +6,7 @@ const router = Router()
 const controller = new CandidateController()
 
 router.post('/saved', requireAuth, requireRole(['candidate']), requireOnboarded, controller.saveJob)
-router.delete('/saved', requireAuth, requireRole(['candidate']), requireOnboarded, controller.unsaveJob)
+router.delete('/saved/:jobId', requireAuth, requireRole(['candidate']), requireOnboarded, controller.unsaveJob)
 router.get('/saved', requireAuth, requireRole(['candidate']), requireOnboarded, controller.listSavedJobs)
 router.put('/profile', requireAuth, requireRole(['candidate']), requireOnboarded, controller.updateProfile)
 router.get('/profile/score/:candidateId', requireAuth, controller.getProfileScore)

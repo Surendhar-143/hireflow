@@ -74,13 +74,7 @@ app.use(compression({
   }
 }))
 
-// Add aggressive Cache-Control headers for GET requests
-app.use((req, res, next) => {
-  if (req.method === 'GET' && !req.path.includes('/auth')) {
-    res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=300')
-  }
-  next()
-})
+// Removed aggressive Cache-Control headers because they were caching authenticated dynamic data like saved jobs and dashboard stats.
 app.use(express.json({ limit: '2mb' }))
 
 // Correlation/Trace & Timer Loggers
