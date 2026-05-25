@@ -153,7 +153,7 @@ export default function AIMatches() {
                 Expand your skills tags list or update your work experience profile in the Dashboard to allow the matching pipeline to find overlaps.
               </p>
               <Link
-                to="/app/candidate/dashboard"
+                to="/app/dashboard"
                 className="inline-flex items-center gap-1.5 px-4 py-2 mt-4 rounded-lg bg-primary text-primary-foreground font-semibold text-xs hover:bg-primary/95 transition-all"
               >
                 Go to Profile Setup

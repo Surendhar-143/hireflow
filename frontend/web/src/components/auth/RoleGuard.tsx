@@ -26,7 +26,7 @@ export function RoleGuard({ allowedRoles, children }: RoleGuardProps) {
           action={{
             label: 'Return to Dashboard',
             onClick: () => {
-              window.location.href = user.role === 'recruiter' ? '/app/recruiter/dashboard' : '/app/candidate/dashboard'
+              window.location.href = user.role === 'recruiter' ? '/app/recruiter' : '/app/dashboard'
             }
           }}
         />

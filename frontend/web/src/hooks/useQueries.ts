@@ -176,13 +176,14 @@ export function useSearch(
 
 // ─── Saved Jobs ───────────────────────────────────────────────────────────────
 
-export function useSavedJobs() {
+export function useSavedJobs(enabled = true) {
   return useQuery(
     queryOptions({
       queryKey: queryKeys.saved.all,
       queryFn: () => jobsApi.saved.list(),
       staleTime: 0, // Always fresh — user-owned data
       retry: 1,
+      enabled,
     })
   )
 }

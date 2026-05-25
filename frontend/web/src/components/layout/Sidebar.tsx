@@ -140,7 +140,7 @@ export function Sidebar({ role: initialRole = 'candidate' }: { role?: 'candidate
 
   const activeRole = user?.role || initialRole
 
-  const { data: savedJobRelations = [] } = useSavedJobs()
+  const { data: savedJobRelations = [] } = useSavedJobs(activeRole === 'candidate')
 
   // Stable array identity — recomputes when role, admin access, or saved jobs count changes
   const nav = useMemo(() => {
