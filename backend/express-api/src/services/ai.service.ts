@@ -8,13 +8,9 @@ export class AIService {
   }
 
   private isAiAvailable(): boolean {
-    const url = config.FASTAPI_AI_URL
-    // In production, if FastAPI URL is still the default localhost/127.0.0.1, the AI container is not co-located inside the same Railway container.
-    // We immediately bypass the fetch request to avoid the 5s timeout and return fallback data instantly (under 5ms).
-    if (config.NODE_ENV === 'production' && (url.includes('localhost') || url.includes('127.0.0.1'))) {
-      return false
-    }
-    return true
+    // Permanently disabled external FastAPI microservice dependency. 
+    // The Express gateway operates as a fully self-contained backend utilizing high-speed local JavaScript algorithms.
+    return false
   }
 
   /**
