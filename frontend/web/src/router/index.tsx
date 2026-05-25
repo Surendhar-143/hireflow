@@ -13,6 +13,9 @@ import {
   PipelineSkeleton,
   ApplicationsSkeleton,
 } from '@/components/shared/Skeletons'
+import { queryClient } from '@/lib/react-query'
+import { queryKeys } from '@/hooks/useQueries'
+import { jobsApi, companiesApi } from '@/api/client'
 
 // ─── Lazy pages ──────────────────────────────────────────────────────────────
 
@@ -104,6 +107,13 @@ export const router = createBrowserRouter([
       },
       {
         path: '/companies',
+        loader: async () => {
+          return queryClient.ensureQueryData({
+            queryKey: queryKeys.companies.list(undefined, 1),
+            queryFn: () => companiesApi.list({ page: 1, limit: 20 }),
+            staleTime: 300_000,
+          })
+        },
         element: (
           <RouteShell fallback={<CompanyListSkeleton />}>
             <Companies />
@@ -112,6 +122,14 @@ export const router = createBrowserRouter([
       },
       {
         path: '/companies/:slug',
+        loader: async ({ params }) => {
+          if (!params.slug) return null
+          return queryClient.ensureQueryData({
+            queryKey: queryKeys.companies.detail(params.slug),
+            queryFn: () => companiesApi.get(params.slug!),
+            staleTime: 300_000,
+          })
+        },
         element: (
           <RouteShell fallback={<CompanyDetailSkeleton />}>
             <CompanyDetail />
@@ -120,6 +138,13 @@ export const router = createBrowserRouter([
       },
       {
         path: '/jobs',
+        loader: async () => {
+          return queryClient.ensureQueryData({
+            queryKey: queryKeys.jobs.list({}),
+            queryFn: () => jobsApi.list({}, undefined, 20),
+            staleTime: 60_000,
+          })
+        },
         element: (
           <RouteShell fallback={<JobFeedSkeleton count={9} />}>
             <JobSearch />
@@ -128,6 +153,14 @@ export const router = createBrowserRouter([
       },
       {
         path: '/jobs/:id',
+        loader: async ({ params }) => {
+          if (!params.id) return null
+          return queryClient.ensureQueryData({
+            queryKey: queryKeys.jobs.detail(params.id),
+            queryFn: () => jobsApi.get(params.id!),
+            staleTime: 120_000,
+          })
+        },
         element: (
           <RouteShell fallback={<JobDetailSkeleton />}>
             <JobDetail />
@@ -160,6 +193,13 @@ export const router = createBrowserRouter([
       },
       {
         path: 'jobs',
+        loader: async () => {
+          return queryClient.ensureQueryData({
+            queryKey: queryKeys.jobs.list({}),
+            queryFn: () => jobsApi.list({}, undefined, 20),
+            staleTime: 60_000,
+          })
+        },
         element: (
           <RouteShell fallback={<JobFeedSkeleton count={9} />}>
             <JobSearch />
@@ -168,6 +208,14 @@ export const router = createBrowserRouter([
       },
       {
         path: 'jobs/:id',
+        loader: async ({ params }) => {
+          if (!params.id) return null
+          return queryClient.ensureQueryData({
+            queryKey: queryKeys.jobs.detail(params.id),
+            queryFn: () => jobsApi.get(params.id!),
+            staleTime: 120_000,
+          })
+        },
         element: (
           <RouteShell fallback={<JobDetailSkeleton />}>
             <JobDetail />
@@ -176,6 +224,13 @@ export const router = createBrowserRouter([
       },
       {
         path: 'companies',
+        loader: async () => {
+          return queryClient.ensureQueryData({
+            queryKey: queryKeys.companies.list(undefined, 1),
+            queryFn: () => companiesApi.list({ page: 1, limit: 20 }),
+            staleTime: 300_000,
+          })
+        },
         element: (
           <RouteShell fallback={<CompanyListSkeleton />}>
             <Companies />
@@ -184,6 +239,14 @@ export const router = createBrowserRouter([
       },
       {
         path: 'companies/:slug',
+        loader: async ({ params }) => {
+          if (!params.slug) return null
+          return queryClient.ensureQueryData({
+            queryKey: queryKeys.companies.detail(params.slug),
+            queryFn: () => companiesApi.get(params.slug!),
+            staleTime: 300_000,
+          })
+        },
         element: (
           <RouteShell fallback={<CompanyDetailSkeleton />}>
             <CompanyDetail />
