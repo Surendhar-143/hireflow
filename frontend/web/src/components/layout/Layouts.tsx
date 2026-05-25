@@ -10,6 +10,7 @@ import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
 import { SkeletonCard } from '@/components/ui/skeleton'
 import { useUIStore } from '@/store/ui-store'
 import { pageVariants } from '@/lib/motion'
+import { MarketingNavbar } from './MarketingNavbar'
 
 // ─── Page loading fallback ───────────────────────────────────────────────────
 function PageSkeleton() {
@@ -136,18 +137,19 @@ export function MarketingLayout() {
     <ErrorBoundary>
       <CommandMenu />
       <AICopilot />
+      
+      {/* Premium Reusable Marketing Navbar */}
+      <MarketingNavbar />
+
       <Suspense fallback={<div className="min-h-screen bg-background animate-pulse" />}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={location.pathname}
-            variants={pageVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
-            <Outlet />
-          </motion.div>
-        </AnimatePresence>
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+        >
+          <Outlet />
+        </motion.div>
       </Suspense>
     </ErrorBoundary>
   )

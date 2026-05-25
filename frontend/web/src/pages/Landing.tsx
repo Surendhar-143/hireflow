@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Briefcase, ArrowRight, Sparkles, Users, Building2, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import logo from '@/assets/logo.png'
-import logoText from '@/assets/logo_text.png'
+
 import { Badge } from '@/components/ui/badge'
 import { Stagger, StaggerItem, FadeIn } from '@/components/motion'
-import { buttonVariants, Button } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 
 const STATS = [
   { label: 'Open Roles', value: '12,400+' },
@@ -31,22 +30,7 @@ export default function Landing() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full bg-brand-600/10 blur-[120px]" />
       </div>
 
-      {/* Nav */}
-      <header className="relative z-10 flex items-center justify-between px-6 md:px-12 h-16 border-b border-border/50 backdrop-blur-md bg-background/70">
-        <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-          <img src={logo} className="size-8 object-contain shrink-0" alt="HireFlow logo" />
-          <img src={logoText} className="h-5 object-contain shrink-0" alt="HireFlow text logo" />
-        </Link>
-        <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
-          <Link to="/jobs" className="hover:text-foreground transition-colors">Browse Jobs</Link>
-          <Link to="/companies" className="hover:text-foreground transition-colors">Companies</Link>
-          <Link to="/app/recruiter" className="hover:text-foreground transition-colors">For Recruiters</Link>
-        </nav>
-        <div className="flex items-center gap-2">
-          <Link to="/app/dashboard" className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }))}>Sign In</Link>
-          <Link to="/app/dashboard" className={cn(buttonVariants({ variant: 'premium', size: 'sm' }))}>Get Started</Link>
-        </div>
-      </header>
+
 
       {/* Hero */}
       <section className="relative z-10 flex flex-col items-center justify-center text-center pt-24 pb-20 px-6">
