@@ -9,7 +9,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-muted-foreground gap-3">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-muted-foreground gap-3">
         <RefreshCw className="size-8 animate-spin text-brand-400" />
         <span className="text-xs font-bold uppercase tracking-wider animate-pulse">Hydrating Auth Session...</span>
       </div>

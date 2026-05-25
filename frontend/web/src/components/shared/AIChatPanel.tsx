@@ -170,10 +170,10 @@ export function AIChatPanel() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0.9 }}
             transition={{ type: 'spring', damping: 26, stiffness: 220 }}
-            className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-slate-950/90 backdrop-blur-2xl border-l border-white/[0.08] flex flex-col z-50 shadow-2xl"
+            className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-surface-elevated/90 backdrop-blur-2xl border-l border-border/80 flex flex-col z-50 shadow-2xl"
           >
             {/* Header */}
-            <div className="p-4 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
+            <div className="p-4 border-b border-border/80 flex items-center justify-between bg-secondary/10">
               <div className="flex items-center gap-2">
                 <div className="size-8 rounded-lg bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-brand-500/20">
                   <Bot className="size-4.5 animate-pulse" />
@@ -191,13 +191,13 @@ export function AIChatPanel() {
                 <button
                   onClick={handleClear}
                   title="Clear chat"
-                  className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-white/5 transition-colors"
+                  className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-secondary/40 transition-colors"
                 >
                   <Trash2 className="size-3.5" />
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
+                  className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-colors"
                 >
                   <X className="size-4" />
                 </button>
@@ -221,7 +221,7 @@ export function AIChatPanel() {
                       'size-7 rounded-lg flex items-center justify-center shrink-0 border text-[10px]',
                       isAi 
                         ? 'bg-brand-500/10 border-brand-500/20 text-brand-400' 
-                        : 'bg-slate-800 border-white/[0.06] text-muted-foreground'
+                        : 'bg-secondary border-border/50 text-muted-foreground'
                     )}>
                       {isAi ? <Bot className="size-3.5" /> : <User className="size-3.5" />}
                     </div>
@@ -230,8 +230,8 @@ export function AIChatPanel() {
                     <div className={cn(
                       'rounded-2xl p-3 text-xs leading-relaxed border',
                       isAi
-                        ? 'bg-white/[0.02] border-white/[0.06] text-foreground'
-                        : 'bg-brand-500/10 border-brand-500/20 text-brand-300'
+                        ? 'bg-secondary/30 border-border/50 text-foreground'
+                        : 'bg-brand-500/10 border-brand-500/20 text-brand-600 dark:text-brand-300'
                     )}>
                       <p className="whitespace-pre-line">{msg.text}</p>
                       {msg.isStreaming && (
@@ -247,7 +247,7 @@ export function AIChatPanel() {
                   <div className="size-7 rounded-lg bg-brand-500/10 border border-brand-500/20 text-brand-400 flex items-center justify-center shrink-0">
                     <Bot className="size-3.5" />
                   </div>
-                  <div className="rounded-2xl p-3 text-xs bg-white/[0.02] border border-white/[0.06] text-muted-foreground flex items-center gap-1">
+                  <div className="rounded-2xl p-3 text-xs bg-secondary/30 border border-border/50 text-muted-foreground flex items-center gap-1">
                     <span className="size-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                     <span className="size-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                     <span className="size-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -258,7 +258,7 @@ export function AIChatPanel() {
             </div>
 
             {/* Quick Suggestions & Prompt input */}
-            <div className="p-4 border-t border-white/[0.08] bg-white/[0.01] space-y-3">
+            <div className="p-4 border-t border-border/80 bg-secondary/10 space-y-3">
               {/* Pre-seeded prompts */}
               <div className="space-y-1.5">
                 <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -270,7 +270,7 @@ export function AIChatPanel() {
                       key={p.label}
                       onClick={() => handleSend(p.prompt)}
                       disabled={isTyping}
-                      className="px-2 py-1 text-[10px] font-bold bg-white/5 border border-white/[0.06] rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/10 hover:border-brand-500/30 transition-all shrink-0 cursor-pointer disabled:opacity-50"
+                      className="px-2 py-1 text-[10px] font-bold bg-secondary/30 border border-border/50 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 hover:border-brand-500/30 transition-all shrink-0 cursor-pointer disabled:opacity-50"
                     >
                       {p.label}
                     </button>
@@ -287,7 +287,7 @@ export function AIChatPanel() {
                   onChange={(e) => setInputText(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend(inputText)}
                   disabled={isTyping}
-                  className="flex-1 bg-white/[0.02] border border-white/[0.06] rounded-xl px-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-brand-500/40 transition-colors disabled:opacity-50"
+                  className="flex-1 bg-background border border-border rounded-xl px-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-brand-500/40 transition-colors disabled:opacity-50"
                 />
                 <Button
                   onClick={() => handleSend(inputText)}

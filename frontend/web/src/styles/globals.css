@@ -14,50 +14,50 @@
     --topbar-height: 56px;
     --radius: 0.75rem;
 
-    /* ── Emerald Obsidian Theme (Dark by Default) ── */
-    --background: 140 20% 4%;
-    --foreground: 140 15% 98%;
+    /* ── Emerald Obsidian Theme (Light Theme) ── */
+    --background: 140 15% 98.5%;
+    --foreground: 140 30% 10%;
 
-    --surface-base: 140 20% 4%;
-    --surface-elevated: 140 12% 8%;
-    --surface-overlay: 140 12% 11%;
+    --surface-base: 140 15% 98.5%;
+    --surface-elevated: 0 0% 100%;
+    --surface-overlay: 0 0% 100%;
 
-    --card: 140 12% 8%;
-    --card-foreground: 140 15% 98%;
-    --popover: 140 12% 8%;
-    --popover-foreground: 140 15% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 140 30% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 140 30% 10%;
 
-    --primary: 150 84% 38%;
-    --primary-foreground: 140 20% 4%;
+    --primary: 150 84% 35%;
+    --primary-foreground: 140 15% 98%;
 
-    --secondary: 140 10% 12%;
-    --secondary-foreground: 140 15% 98%;
+    --secondary: 140 12% 95%;
+    --secondary-foreground: 140 30% 15%;
 
-    --muted: 140 10% 12%;
-    --muted-foreground: 140 8% 64%;
+    --muted: 140 10% 95%;
+    --muted-foreground: 140 10% 40%;
 
-    --accent: 150 84% 45%;
-    --accent-foreground: 140 20% 4%;
+    --accent: 150 84% 42%;
+    --accent-foreground: 140 15% 98%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 71% 45%;
+    --success: 142 71% 40%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 0%;
+    --warning: 38 92% 40%;
+    --warning-foreground: 0 0% 100%;
 
-    --info: 217 91% 60%;
+    --info: 217 91% 55%;
     --info-foreground: 0 0% 100%;
 
-    --border: 140 10% 14%;
-    --input: 140 10% 14%;
-    --ring: 150 84% 38%;
+    --border: 140 12% 90%;
+    --input: 140 12% 90%;
+    --ring: 150 84% 35%;
   }
 
   .dark {
-    /* Identical HSL values so Dark Theme is enforced automatically */
+    /* ── Emerald Obsidian Theme (Dark Theme) ── */
     --background: 140 20% 4%;
     --foreground: 140 15% 98%;
 

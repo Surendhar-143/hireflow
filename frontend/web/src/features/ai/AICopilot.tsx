@@ -167,14 +167,14 @@ export function AICopilot() {
 
           {/* Sliding Copilot Drawer */}
           <motion.div
-            className="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-slate-950/90 backdrop-blur-2xl border-l border-white/[0.08] z-50 flex flex-col shadow-2xl"
+            className="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-surface-elevated/90 backdrop-blur-2xl border-l border-border/80 z-50 flex flex-col shadow-2xl"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 26, stiffness: 220 }}
           >
             {/* Header */}
-            <div className="h-16 border-b border-white/[0.08] flex items-center justify-between px-4 shrink-0 bg-white/[0.02]">
+            <div className="h-16 border-b border-border/80 flex items-center justify-between px-4 shrink-0 bg-secondary/10">
               <div className="flex items-center gap-2.5">
                 <div className="size-8 rounded-lg bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-brand-500/20">
                   <Bot className="size-4.5 animate-pulse" />
@@ -192,7 +192,7 @@ export function AICopilot() {
                 <button
                   onClick={handleClear}
                   title="Clear conversation"
-                  className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-white/5 transition-colors"
+                  className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-secondary/40 transition-colors"
                 >
                   <Trash2 className="size-3.5" />
                 </button>
@@ -219,7 +219,7 @@ export function AICopilot() {
                       'size-7 rounded-lg flex items-center justify-center shrink-0 border text-[10px]',
                       isAi 
                         ? 'bg-brand-500/10 border-brand-500/20 text-brand-400' 
-                        : 'bg-slate-800 border-white/[0.06] text-muted-foreground'
+                        : 'bg-secondary border-border/50 text-muted-foreground'
                     )}>
                       {isAi ? <Bot className="size-3.5" /> : <User className="size-3.5" />}
                     </div>
@@ -228,8 +228,8 @@ export function AICopilot() {
                     <div className={cn(
                       'rounded-2xl p-3 text-xs leading-relaxed border',
                       isAi
-                        ? 'bg-white/[0.02] border-white/[0.06] text-foreground'
-                        : 'bg-brand-500/10 border-brand-500/20 text-brand-300'
+                        ? 'bg-secondary/30 border-border/50 text-foreground'
+                        : 'bg-brand-500/10 border-brand-500/20 text-brand-600 dark:text-brand-300'
                     )}>
                       <p className="whitespace-pre-line">{msg.content}</p>
                       {msg.isStreaming && (
@@ -245,7 +245,7 @@ export function AICopilot() {
                   <div className="size-7 rounded-lg bg-brand-500/10 border border-brand-500/20 text-brand-400 flex items-center justify-center shrink-0">
                     <Bot className="size-3.5" />
                   </div>
-                  <div className="rounded-2xl p-3 text-xs bg-white/[0.02] border border-white/[0.06] text-muted-foreground flex items-center gap-1">
+                  <div className="rounded-2xl p-3 text-xs bg-secondary/30 border border-border/50 text-muted-foreground flex items-center gap-1">
                     <span className="size-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                     <span className="size-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                     <span className="size-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -255,7 +255,7 @@ export function AICopilot() {
             </div>
 
             {/* Input & Quick Suggestions Footer */}
-            <div className="p-4 border-t border-white/[0.08] bg-white/[0.01] space-y-3.5">
+            <div className="p-4 border-t border-border/80 bg-secondary/10 space-y-3.5">
               {/* Quick Prompt Suggesters */}
               {messages.length === 1 && (
                 <div className="space-y-1.5">
@@ -269,7 +269,7 @@ export function AICopilot() {
                         key={s.label}
                         onClick={() => handleSend(s.text)}
                         disabled={isProcessing}
-                        className="w-full text-left px-3 py-2 text-[10px] font-semibold bg-white/5 border border-white/[0.06] hover:border-brand-500/30 rounded-xl text-muted-foreground hover:text-foreground transition-all truncate cursor-pointer disabled:opacity-50"
+                        className="w-full text-left px-3 py-2 text-[10px] font-semibold bg-secondary/30 border border-border/50 hover:border-brand-500/30 rounded-xl text-muted-foreground hover:text-foreground transition-all truncate cursor-pointer disabled:opacity-50"
                       >
                         {s.label}
                       </button>
@@ -291,7 +291,7 @@ export function AICopilot() {
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask copilot anything..."
                   disabled={isProcessing}
-                  className="flex-1 bg-white/[0.02] border border-white/[0.06] rounded-xl px-4 py-2.5 text-xs text-foreground placeholder:text-muted-foreground/50 outline-none focus:border-brand-500/40 transition-colors disabled:opacity-50"
+                  className="flex-1 bg-background border border-border rounded-xl px-4 py-2.5 text-xs text-foreground placeholder:text-muted-foreground/50 outline-none focus:border-brand-500/40 transition-colors disabled:opacity-50"
                 />
                 <Button
                   type="submit"
