@@ -1,5 +1,6 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '@/components/auth/AuthContext'
 import { motion } from 'framer-motion'
 import { Briefcase, ArrowRight, Sparkles, Users, Building2, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -23,6 +24,14 @@ const FEATURES = [
 ]
 
 export default function Landing() {
+  const { user, isLoading } = useAuth()
+  const navigate = useNavigate()
+
+  React.useEffect(() => {
+    if (!isLoading && user) {
+      navigate('/app/dashboard')
+    }
+  }, [user, isLoading, navigate])
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Ambient gradient */}

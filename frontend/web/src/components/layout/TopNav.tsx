@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Bell, Sun, Moon, Command, Sparkles, Menu } from 'lucide-react'
+import { Search, Bell, Sun, Moon, Command, Sparkles, Menu, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Avatar } from '@/components/ui/avatar'
 import { useUIStore } from '@/store/ui-store'
 import { useAuth } from '@/components/auth/AuthContext'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export function TopNav() {
   const {
@@ -17,6 +18,40 @@ export function TopNav() {
     toggleMobileSidebar,
   } = useUIStore()
   const { user } = useAuth()
+
+  const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const [notifications, setNotifications] = useState([
+    { id: '1', text: 'Your application status for Software Engineer was updated to Interviewing.', time: '2 hours ago', unread: true },
+    { id: '2', text: 'New job recommendation matched with 96% score: Frontend Engineer at Linear.', time: '5 hours ago', unread: true },
+    { id: '3', text: 'Welcome to HireFlow! Complete your profile to unlock elite semantic AI matches.', time: '1 day ago', unread: false },
+  ])
+  
+  const popoverRef = useRef<HTMLDivElement>(null)
+
+  // Click outside to close notifications dropdown
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+        setNotificationsOpen(false)
+      }
+    }
+    if (notificationsOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [notificationsOpen])
+
+  const unreadCount = notifications.filter(n => n.unread).length
+
+  const markAllAsRead = () => {
+    setNotifications(notifications.map(n => ({ ...n, unread: false })))
+  }
+
+  const toggleUnread = (id: string) => {
+    setNotifications(notifications.map(n => n.id === id ? { ...n, unread: !n.unread } : n))
+  }
 
   // Derive display name: prefer full name, fall back to email username, then 'User'
   const displayName = user?.name
@@ -69,10 +104,88 @@ export function TopNav() {
       </button>
 
       {/* Notifications */}
-      <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground" aria-label="Notifications">
-        <Bell className="size-4" />
-        <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-brand-500 ring-1 ring-background" />
-      </Button>
+      <div className="relative" ref={popoverRef}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "relative text-muted-foreground hover:text-foreground transition-colors",
+            notificationsOpen && "text-foreground bg-accent"
+          )}
+          onClick={() => setNotificationsOpen(!notificationsOpen)}
+          aria-label="Notifications"
+        >
+          <Bell className="size-4" />
+          {unreadCount > 0 && (
+            <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-brand-500 ring-1 ring-background animate-pulse" />
+          )}
+        </Button>
+
+        <AnimatePresence>
+          {notificationsOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 8, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.95 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+              className="absolute right-0 top-12 mt-1 z-50 w-80 sm:w-96 rounded-2xl border border-border bg-card shadow-2xl p-4 overflow-hidden"
+            >
+              <div className="flex items-center justify-between border-b border-border/80 pb-2 mb-3">
+                <h3 className="text-[10px] font-extrabold text-foreground uppercase tracking-wider">Notifications</h3>
+                {unreadCount > 0 && (
+                  <button
+                    onClick={markAllAsRead}
+                    className="text-[10px] font-bold text-brand-400 hover:text-brand-300 transition-colors"
+                  >
+                    Mark all as read
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
+                {notifications.map((n) => (
+                  <div
+                    key={n.id}
+                    onClick={() => toggleUnread(n.id)}
+                    className={cn(
+                      "group flex gap-2.5 p-2 rounded-xl text-left cursor-pointer transition-colors duration-fast border",
+                      n.unread 
+                        ? "bg-brand-500/[0.03] hover:bg-brand-500/[0.06] border-brand-500/10" 
+                        : "hover:bg-accent/40 border-transparent"
+                    )}
+                  >
+                    <div className="mt-1 shrink-0">
+                      <div className={cn(
+                        "size-1.5 rounded-full mt-1.5",
+                        n.unread ? "bg-brand-500" : "bg-muted-foreground/30"
+                      )} />
+                    </div>
+                    <div className="flex-1 space-y-0.5">
+                      <p className={cn(
+                        "text-xs leading-snug",
+                        n.unread ? "text-foreground font-medium" : "text-muted-foreground"
+                      )}>
+                        {n.text}
+                      </p>
+                      <span className="text-[10px] text-muted-foreground/50 block">{n.time}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="border-t border-border/80 pt-2 mt-3 text-center">
+                <Link
+                  to="/app/dashboard"
+                  onClick={() => setNotificationsOpen(false)}
+                  className="text-[10px] font-bold text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider"
+                >
+                  View All Activity
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Copilot */}
       <Button

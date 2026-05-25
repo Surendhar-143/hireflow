@@ -12,7 +12,13 @@ import { cn } from '@/lib/utils'
 
 export default function Signup() {
   const navigate = useNavigate()
-  const { signUpWithEmail } = useAuth()
+  const { signUpWithEmail, user, isLoading: isAuthLoading } = useAuth()
+
+  React.useEffect(() => {
+    if (!isAuthLoading && user) {
+      navigate('/app/dashboard')
+    }
+  }, [user, isAuthLoading, navigate])
   
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')

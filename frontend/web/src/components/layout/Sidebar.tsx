@@ -3,6 +3,7 @@ import { NavLink, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import logo from '@/assets/logo.png'
 import logoText from '@/assets/logo_text.png'
+import { useSavedJobs } from '@/hooks/useQueries'
 import {
   Briefcase, LayoutDashboard, Building2, Bookmark, FileText,
   Settings, ChevronLeft, ChevronRight, Sparkles, Bell, Users,
@@ -110,14 +111,30 @@ export function Sidebar({ role: initialRole = 'candidate' }: { role?: 'candidate
 
   const activeRole = user?.role || initialRole
 
-  // Stable array identity — only recomputes when role or admin access changes
+  const { data: savedJobRelations = [] } = useSavedJobs()
+
+  // Stable array identity — recomputes when role, admin access, or saved jobs count changes
   const nav = useMemo(() => {
-    const base = activeRole === 'candidate' ? CANDIDATE_NAV : RECRUITER_NAV
+    let base = activeRole === 'candidate' ? CANDIDATE_NAV : RECRUITER_NAV
+    
+    // Map dynamic badge values
+    if (activeRole === 'candidate') {
+      base = base.map(item => {
+        if (item.label === 'Saved Jobs') {
+          return { 
+            ...item, 
+            badge: savedJobRelations.length > 0 ? String(savedJobRelations.length) : undefined 
+          }
+        }
+        return item
+      })
+    }
+    
     if (canAccessAdmin) {
       return [...base, { label: 'Admin Logs', href: '/app/admin', icon: Shield }]
     }
     return base
-  }, [activeRole, canAccessAdmin])
+  }, [activeRole, canAccessAdmin, savedJobRelations])
 
   const handleItemClick = () => {
     setMobileSidebarOpen(false)

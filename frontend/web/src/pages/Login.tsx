@@ -11,7 +11,13 @@ import { toast } from 'sonner'
 
 export default function Login() {
   const navigate = useNavigate()
-  const { loginWithEmail, sendMagicLink } = useAuth()
+  const { loginWithEmail, sendMagicLink, user, isLoading: isAuthLoading } = useAuth()
+
+  React.useEffect(() => {
+    if (!isAuthLoading && user) {
+      navigate('/app/dashboard')
+    }
+  }, [user, isAuthLoading, navigate])
   
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
