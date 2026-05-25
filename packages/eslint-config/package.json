@@ -5,8 +5,8 @@
   "main": "./index.js",
   "description": "Shared ESLint configurations for the HireFlow monorepo",
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.4",
+    "@typescript-eslint/parser": "^8.59.4",
     "eslint": "^8.57.1",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^4.6.2",
