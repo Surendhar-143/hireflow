@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Briefcase, ArrowRight, Sparkles, Users, Building2, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import logo from '@/assets/logo.png'
 import { Badge } from '@/components/ui/badge'
 import { Stagger, StaggerItem, FadeIn } from '@/components/motion'
 import { buttonVariants, Button } from '@/components/ui/button'
@@ -32,9 +33,7 @@ export default function Landing() {
       {/* Nav */}
       <header className="relative z-10 flex items-center justify-between px-6 md:px-12 h-16 border-b border-border/50 backdrop-blur-md bg-background/70">
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center justify-center size-8 rounded-lg bg-gradient-to-br from-brand-600 to-brand-400">
-            <Briefcase className="size-4 text-white" />
-          </div>
+          <img src={logo} className="size-8 object-contain shrink-0" alt="HireFlow logo" />
           <span className="font-bold text-lg tracking-tight">HireFlow<span className="text-brand-400">.</span></span>
         </div>
         <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import logo from '@/assets/logo.png'
 import {
   Briefcase, LayoutDashboard, Building2, Bookmark, FileText,
   Settings, ChevronLeft, ChevronRight, Sparkles, Bell, Users,
@@ -135,9 +136,7 @@ export function Sidebar({ role: initialRole = 'candidate' }: { role?: 'candidate
       {/* Logo */}
       <div className="flex h-14 items-center border-b border-border px-3 shrink-0">
         <Link to="/" className="flex items-center gap-2.5 min-w-0 hover:opacity-80 transition-opacity" aria-label="HireFlow home" onClick={handleItemClick}>
-          <div className="flex items-center justify-center size-8 rounded-lg bg-gradient-to-br from-brand-600 to-brand-400 shadow-glow-sm shrink-0">
-            <Briefcase className="size-4 text-white" />
-          </div>
+          <img src={logo} className="size-8 object-contain shrink-0 drop-shadow-glow" alt="HireFlow logo" />
           <AnimatePresence>
             {!sidebarCollapsed && (
               <motion.span
