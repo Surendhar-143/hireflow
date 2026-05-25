@@ -28,7 +28,7 @@ function PageSkeleton() {
 
 // ─── Candidate Dashboard Layout ──────────────────────────────────────────────
 export function CandidateDashboardLayout() {
-  const { sidebarCollapsed } = useUIStore()
+  const { sidebarCollapsed, mobileSidebarOpen, setMobileSidebarOpen } = useUIStore()
   const location = useLocation()
 
   return (
@@ -36,13 +36,20 @@ export function CandidateDashboardLayout() {
       <CommandMenu />
       <AICopilot />
       <Sidebar role="candidate" />
+      {/* Mobile Sidebar Backdrop Overlay */}
+      {mobileSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-background/60 backdrop-blur-sm z-20 md:hidden"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
       <TopNav />
       <main
         className={cn(
-          'transition-all duration-slow pt-14',
+          'transition-all duration-slow pt-14 pl-0',
           sidebarCollapsed
-            ? 'pl-[var(--sidebar-collapsed-width)]'
-            : 'pl-[var(--sidebar-width)]'
+            ? 'md:pl-[var(--sidebar-collapsed-width)]'
+            : 'md:pl-[var(--sidebar-width)]'
         )}
       >
         <ErrorBoundary>
@@ -68,7 +75,7 @@ export function CandidateDashboardLayout() {
 
 // ─── Recruiter Dashboard Layout ──────────────────────────────────────────────
 export function RecruiterDashboardLayout() {
-  const { sidebarCollapsed } = useUIStore()
+  const { sidebarCollapsed, mobileSidebarOpen, setMobileSidebarOpen } = useUIStore()
   const location = useLocation()
 
   return (
@@ -76,13 +83,20 @@ export function RecruiterDashboardLayout() {
       <CommandMenu />
       <AICopilot />
       <Sidebar role="recruiter" />
+      {/* Mobile Sidebar Backdrop Overlay */}
+      {mobileSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-background/60 backdrop-blur-sm z-20 md:hidden"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
       <TopNav />
       <main
         className={cn(
-          'transition-all duration-slow pt-14',
+          'transition-all duration-slow pt-14 pl-0',
           sidebarCollapsed
-            ? 'pl-[var(--sidebar-collapsed-width)]'
-            : 'pl-[var(--sidebar-width)]'
+            ? 'md:pl-[var(--sidebar-collapsed-width)]'
+            : 'md:pl-[var(--sidebar-width)]'
         )}
       >
         <ErrorBoundary>

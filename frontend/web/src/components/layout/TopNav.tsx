@@ -1,15 +1,21 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Bell, Sun, Moon, Command, Sparkles } from 'lucide-react'
+import { Search, Bell, Sun, Moon, Command, Sparkles, Menu } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Avatar } from '@/components/ui/avatar'
 import { useUIStore } from '@/store/ui-store'
 import { useAuth } from '@/components/auth/AuthContext'
 
-
 export function TopNav() {
-  const { theme, toggleTheme, setCommandMenuOpen, setCopilotOpen } = useUIStore()
+  const {
+    theme,
+    toggleTheme,
+    setCommandMenuOpen,
+    setCopilotOpen,
+    sidebarCollapsed,
+    toggleMobileSidebar,
+  } = useUIStore()
   const { user } = useAuth()
 
   // Derive display name: prefer full name, fall back to email username, then 'User'
@@ -24,11 +30,23 @@ export function TopNav() {
     <header
       className={cn(
         'fixed top-0 right-0 z-20 h-14 flex items-center gap-3 px-4 border-b border-border',
-        'bg-background/80 backdrop-blur-md',
-        'left-[var(--sidebar-width)]'
+        'bg-background/80 backdrop-blur-md transition-all duration-slow left-0',
+        sidebarCollapsed
+          ? 'md:left-[var(--sidebar-collapsed-width)]'
+          : 'md:left-[var(--sidebar-width)]'
       )}
-      style={{ '--sidebar-width': 'var(--sidebar-width)' } as React.CSSProperties}
     >
+      {/* Mobile Sidebar Hamburger Toggle */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={toggleMobileSidebar}
+        className="md:hidden text-muted-foreground hover:text-foreground shrink-0"
+        aria-label="Toggle Navigation Sidebar"
+      >
+        <Menu className="size-5" />
+      </Button>
+
       {/* Spacer pushes controls to the right */}
       <div className="flex-1" />
 

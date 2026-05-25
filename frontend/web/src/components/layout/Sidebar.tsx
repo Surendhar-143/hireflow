@@ -38,16 +38,18 @@ interface NavItemProps {
   label: string
   badge?: string
   collapsed: boolean
+  onClick?: () => void
 }
 
-const NavItem = React.memo(function NavItem({ href, icon: Icon, label, badge, collapsed }: NavItemProps) {
+const NavItem = React.memo(function NavItem({ href, icon: Icon, label, badge, collapsed, onClick }: NavItemProps) {
   return (
     <NavLink
       to={href}
+      onClick={onClick}
       className={({ isActive }) =>
         cn(
           'group relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium',
-          'transition-colors duration-fast select-none',
+          'transition-colors duration-fast select-none z-10',
           isActive
             ? 'bg-accent text-foreground'
             : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
@@ -102,7 +104,7 @@ const NavItem = React.memo(function NavItem({ href, icon: Icon, label, badge, co
 export function Sidebar({ role: initialRole = 'candidate' }: { role?: 'candidate' | 'recruiter' }) {
   const { user } = useAuth()
   const { canAccessAdmin } = usePermissions()
-  const { sidebarCollapsed, toggleSidebar } = useUIStore()
+  const { sidebarCollapsed, toggleSidebar, mobileSidebarOpen, setMobileSidebarOpen } = useUIStore()
 
   const activeRole = user?.role || initialRole
 
@@ -115,19 +117,24 @@ export function Sidebar({ role: initialRole = 'candidate' }: { role?: 'candidate
     return base
   }, [activeRole, canAccessAdmin])
 
+  const handleItemClick = () => {
+    setMobileSidebarOpen(false)
+  }
+
   return (
     <motion.aside
       variants={sidebarVariants}
       animate={sidebarCollapsed ? 'collapsed' : 'expanded'}
       className={cn(
         'fixed inset-y-0 left-0 z-30 flex flex-col bg-surface-elevated border-r border-border',
-        'overflow-hidden shadow-sidebar'
+        'overflow-hidden shadow-sidebar transition-transform duration-slow',
+        mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
       )}
       style={{ width: sidebarCollapsed ? 'var(--sidebar-collapsed-width)' : 'var(--sidebar-width)' }}
     >
       {/* Logo */}
       <div className="flex h-14 items-center border-b border-border px-3 shrink-0">
-        <Link to="/" className="flex items-center gap-2.5 min-w-0 hover:opacity-80 transition-opacity" aria-label="HireFlow home">
+        <Link to="/" className="flex items-center gap-2.5 min-w-0 hover:opacity-80 transition-opacity" aria-label="HireFlow home" onClick={handleItemClick}>
           <div className="flex items-center justify-center size-8 rounded-lg bg-gradient-to-br from-brand-600 to-brand-400 shadow-glow-sm shrink-0">
             <Briefcase className="size-4 text-white" />
           </div>
@@ -154,13 +161,13 @@ export function Sidebar({ role: initialRole = 'candidate' }: { role?: 'candidate
         aria-label={activeRole === 'candidate' ? 'Candidate navigation' : 'Recruiter navigation'}
       >
         {nav.map((item) => (
-          <NavItem key={item.href} {...item} collapsed={sidebarCollapsed} />
+          <NavItem key={item.href} {...item} collapsed={sidebarCollapsed} onClick={handleItemClick} />
         ))}
       </nav>
 
       {/* Footer: User + collapse */}
       <div className="border-t border-border p-2 space-y-1 shrink-0">
-        <NavItem href="/app/settings" icon={Settings} label="Settings" collapsed={sidebarCollapsed} />
+        <NavItem href="/app/settings" icon={Settings} label="Settings" collapsed={sidebarCollapsed} onClick={handleItemClick} />
         <div className={cn('flex items-center gap-2.5 px-3 py-2', sidebarCollapsed && 'justify-center')}>
           <Avatar
             src={user?.avatar || undefined}
@@ -188,7 +195,7 @@ export function Sidebar({ role: initialRole = 'candidate' }: { role?: 'candidate
           variant="ghost"
           size="icon-sm"
           onClick={toggleSidebar}
-          className="w-full justify-center text-muted-foreground hover:text-foreground"
+          className="w-full justify-center text-muted-foreground hover:text-foreground hidden md:flex"
           aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {sidebarCollapsed ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}

@@ -5,6 +5,9 @@ interface UIStore {
   sidebarCollapsed: boolean
   toggleSidebar: () => void
   setSidebarCollapsed: (v: boolean) => void
+  mobileSidebarOpen: boolean
+  setMobileSidebarOpen: (v: boolean) => void
+  toggleMobileSidebar: () => void
   theme: 'dark' | 'light'
   toggleTheme: () => void
   commandMenuOpen: boolean
@@ -19,6 +22,9 @@ export const useUIStore = create<UIStore>()(
       sidebarCollapsed: false,
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
       setSidebarCollapsed: (v) => set({ sidebarCollapsed: v }),
+      mobileSidebarOpen: false,
+      setMobileSidebarOpen: (v) => set({ mobileSidebarOpen: v }),
+      toggleMobileSidebar: () => set((s) => ({ mobileSidebarOpen: !s.mobileSidebarOpen })),
       theme: 'dark',
       toggleTheme: () =>
         set((s) => {
