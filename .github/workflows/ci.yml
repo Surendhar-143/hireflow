@@ -190,7 +190,7 @@ jobs:
         continue-on-error: false
 
       - name: Upload web build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: web-dist
           path: frontend/web/dist
